@@ -192,8 +192,8 @@ local function checkChatForLoadoutCommand( ply, text, teamOnly, playerIsDead )
 
     DEBUGPRINT("Found chat command " .. operation, ply)
 
-    playerLoadoutDirectory = getPlayerLoadoutDirectory( ply )
-    if not existsInDataDirectory( playerLoadoutDirectory ) then createDirectory( playerLoadoutDirectory ) end
+    playerLoadoutDirectory, directoryExists = getPlayerLoadoutDirectory( ply )
+    if not directoryExists then createDirectory( playerLoadoutDirectory ) end
 
     local playerLoadoutFile = ( loadout ~= nil ) and makePath( playerLoadoutDirectory, loadout ) or nil
 
