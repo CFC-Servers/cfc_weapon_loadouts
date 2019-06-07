@@ -11,7 +11,6 @@ LoadoutCommands["equip"]  = "loadout"
 
 local DEBUG = true
 
-local LOADOUT_DIR = "cfc_weapon_loadouts"
 
 local function loadprint(msg)
     print( "[CFC Loadouts] " .. msg )
@@ -94,6 +93,8 @@ local function getChatCommand(chatString)
             return operation, loadout
         end
     end
+    
+    DEBUGPRINT('No valid loadout command found in chat string "' .. chatString .. '"!')
 end
 
 local function getPlayerWeaponsAsString(ply)
@@ -109,7 +110,7 @@ end
 local function getWeaponsFromLoadout(loadoutPath)
     local weaponsString = file.Read( loadoutPath )
 
-    return string.Split( weaponString, "\n" )
+    return string.Split( weaponsString, "\n" )
 end
 
 local function listLoadout(ply, loadoutPath)
@@ -119,7 +120,7 @@ local function listLoadout(ply, loadoutPath)
 
     -- TODO: Make this not a totally shit way to report a loadout
     for _, class in ipairs( weaponClasses ) do
-        ply:ChatPrint("\t" .. class )
+        ply:ChatPrint( "\t" .. class )
     end
 end
 
@@ -185,6 +186,7 @@ end
 -- HOOKS --
 
 local function checkChatForLoadoutCommand( ply, text, teamOnly, playerIsDead )
+    DEBUGPRINT("Checking if valid player...")
     if not IsValidPlayer( ply ) then return end
 
     local operation, loadout = getChatCommand( text )
