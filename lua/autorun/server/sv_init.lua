@@ -23,7 +23,7 @@ local function DEBUGPRINT(msg, ply)
     debugMsg = "(DEBUG): " .. msg
 
     loadprint( debugMsg ) 
-    if IsValidPlayer( ply ) then ply:ChatPrint( debugMsg )
+    if IsValidPlayer( ply ) then ply:ChatPrint( debugMsg ) end
 end
 
 -- NOTE: Creates dir in "/garrysmod/data/"
