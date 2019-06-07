@@ -156,7 +156,7 @@ local function checkChatForLoadoutCommand( ply, text, teamOnly, playerIsDead )
     else
         if not existsInDataDirectory( playerLoadoutFile ) then
             ply:ChatPrint( 'Loadout ' .. loadout .. ' does not exist!' )
-            return end
+            return
         end
     end
 
