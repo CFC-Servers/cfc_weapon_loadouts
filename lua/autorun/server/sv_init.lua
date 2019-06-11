@@ -10,6 +10,12 @@ LoadoutCommands["equip"]  = "loadout"
 
 local LOADOUT_DIR = "cfc_weapon_loadouts"
 
+local DEFAULT_LOADOUT = "weapon_fists\n" ..    
+                        "weapon_pistol\n" ..
+                        "weapon_crowbar\n" ..
+                        "weapon_physgun\n" ..
+                        "weapon_physcannon"
+
 
 -- LOGGING -- 
 
@@ -17,7 +23,7 @@ local DEBUG = 1
 local INFO = 2
 local ERROR = 3
 
-local DEBUG_ENABLED = false
+local DEBUG_ENABLED = true
 
 local function log(msg, level)
     if level == nil then level = INFO end
@@ -38,6 +44,10 @@ local function IsValidPlayer(ply)
     local isValidPlayer = IsValid( ply ) and ply:IsPlayer()
 
     return isValidPlayer
+end
+
+local function splitByNewLine(toSplit)
+    return string.Split(toSplit, "\n")
 end
 
 
@@ -109,28 +119,25 @@ end
 local function createLoadoutFile(ply, loadoutPath, weaponsString)
     local filename = getLoadoutFilename( loadoutPath )
     
-    if existsInDataDirectory( filename ) then
-        ply:ChatPrint( 'You cannot overwrite a loadout! Please use the command "' .. LoadoutCommands['delete'] .. '" before re-creating loadouts.' )
-        return
-    end
-    
     createFile( filename, weaponsString )
 end
 
 -- END FILE OPERATIONS --
 
 
-local function splitByNewLine(toSplit)
-    return string.Split( toSplit, "\n" )
-end
-
-local function getPlayerWeaponsAsStringAndTable(ply)
+local function createWeaponsString(weaponsTable)
     local weaponsString = ""
 
-    for _, wep in pairs( ply:GetWeapons() ) do
+    for _, wep in pairs( weaponsTable ) do
         weaponsString = weaponsString .. wep:GetClass() .. "\n"
     end
     string.TrimRight( weaponsString, "\n" )
+
+    return weaponsString
+end
+
+local function getPlayerWeaponsAsStringAndTable(ply)
+    local weaponsString = createWeaponsString( ply:GetWeapons() )
 
     return weaponsString, splitByNewLine( weaponsString )
 end
@@ -154,7 +161,6 @@ local function listLoadout( loadout )
         loadout.owner:ChatPrint( "\t" .. class )
     end
 end
-
 
 local function initializeLoadout(ply, loadoutName)
     local playerLoadoutDirectory, directoryExists = getPlayerLoadoutDirectory( ply )
@@ -190,7 +196,28 @@ local function initializeNewLoadout(ply, loadoutName)
     return loadout
 end
 
+local function setPlayerEquippedLoadout(ply, loadout)
+    if not IsValidPlayer( ply ) then return end
 
+    ply:SetNWString( "CFC_Loadout", loadout )
+end
+
+local function getPlayerEquippedLoadout(ply)
+    if not IsValidPlayer( ply ) then return end
+
+    return ply:GetNWString( "CFC_Loadout", "" )
+end
+
+local function createDefaultLoadoutForPlayer(ply)
+    local playerLoadoutDirectory = getPlayerLoadoutDirectory( ply )
+    local weaponsString = DEFAULT_LOADOUT
+
+    local filePath = makePath( playerLoadoutDirectory, 'default' )
+
+    createLoadoutFile( ply, filePath, weaponsString )
+
+    setPlayerEquippedLoadout( ply, 'default' )
+end
 
 
 -- PUBLIC LOADOUT FUNCTIONS --
@@ -233,14 +260,6 @@ function CFC_Loadouts:createLoadout(ply, loadoutName)
     -- You can't create a loadout when you're dead, dumbass
     if not ply:Alive() then return end
 
-    if playerLoadoutExists( ply, loadoutName ) then
-        local deleteCommand = LOADOUT_COMMAND_PREFIX .. LoadoutCommands['delete'] .. " " .. loadoutName
-        local deleteMessage = 'You cannot overwrite a loadout! Please use the command "' .. deleteCommand .. '" before re-creating ' .. loadoutName
-
-        ply:ChatPrint( deleteMessage )
-        return
-    end
-
     local loadout = initializeNewLoadout( ply, loadoutName )
 
     return loadout
@@ -248,6 +267,15 @@ end
 
 function CFC_Loadouts:equipLoadout(ply, loadout)
     if not IsValidPlayer( ply ) then return end
+
+    if loadout.name ~= 'default' and getPlayerEquippedLoadout( ply ) == loadout.name then
+        ply:ChatPrint( 'You already have ' .. loadout.name .. ' equipped!' )
+        return
+    end
+
+    setPlayerEquippedLoadout( ply, loadout.name )
+
+    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return end
 
     -- TODO: Maybe not take literally everything
     ply:StripWeapons()
@@ -278,6 +306,14 @@ local LoadoutCommandFunctions = {}
 LoadoutCommandFunctions["create"] = function(ply, loadoutName)
     log("Creating loadout " .. loadoutName, DEBUG)
 
+    if playerLoadoutExists( ply, loadoutName ) then
+        local deleteCommand = LOADOUT_COMMAND_PREFIX .. LoadoutCommands['delete'] .. " " .. loadoutName
+        local deleteMessage = 'You cannot overwrite a loadout! Please use the command "' .. deleteCommand .. '" before re-creating ' .. loadoutName
+
+        ply:ChatPrint( deleteMessage )
+        return
+    end
+
     local loadout = CFC_Loadouts:createLoadout( ply, loadoutName )
     if loadout then ply:ChatPrint( 'Loadout "' .. loadoutName .. '" created.' ) end
 end
@@ -291,6 +327,7 @@ LoadoutCommandFunctions["delete"] = function(ply, loadoutName)
     if CFC_Loadouts:deleteLoadout( loadout ) then ply:ChatPrint( 'Loadout "' .. loadoutName .. '" deleted.' ) end
 end
 
+-- I actually hate this
 LoadoutCommandFunctions["list"] = function(ply, loadoutName)
     if loadoutName ~= nil then 
         local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
@@ -300,12 +337,11 @@ LoadoutCommandFunctions["list"] = function(ply, loadoutName)
         return
     end
 
-    log("Listing all loadouts for " .. ply:SteamID() .. "(" .. ply:SteamID64() .. ")", DEBUG)
-
     -- List all loadouts
     local loadoutDirectory, _ = getPlayerLoadoutDirectory( ply )
     local loadoutFiles, _ = file.Find( loadoutDirectory .. "/*.txt", "DATA" )
 
+    log("Listing all loadouts for " .. ply:SteamID() .. "(" .. ply:SteamID64() .. ")", DEBUG)
     for _, filename in ipairs( loadoutFiles ) do
         loadoutName = string.Replace( filename, '.txt', '' )
 
@@ -320,6 +356,8 @@ end
 LoadoutCommandFunctions["equip"] = function(ply, loadoutName)
     log("Equipping loadout " .. loadoutName, DEBUG)
  
+    if loadoutName == nil then loadoutName = getPlayerEquippedLoadout( ply ) end
+
     local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
     if loadout == nil then return end
 
@@ -332,6 +370,7 @@ end
 -- CHAT FUNCTIONS --
 
 local function isValidLoadoutName(loadoutName)
+    -- Only alnum
     return string.find( loadoutName, "[^%w]" ) == nil
 end
 
@@ -359,6 +398,10 @@ local function getChatCommand(chatString)
     log('No valid loadout command found in chat string "' .. chatString .. '"!', DEBUG)
 end
 
+-- END CHAT FUNCTIONS --
+
+
+-- HOOKS --
 local function checkChatForLoadoutCommand( ply, text, team )
     log("Checking if valid player...", DEBUG)
     if not IsValidPlayer( ply ) then return end
@@ -372,14 +415,37 @@ local function checkChatForLoadoutCommand( ply, text, team )
 
     LoadoutCommandFunctions[operation]( ply, loadoutName )
 end
-
--- END CHAT FUNCTIONS --
-
-
--- HOOKS --
-
 hook.Remove( "PlayerSay", "CFC_LoadoutManager" )
 hook.Add( "PlayerSay", "CFC_LoadoutManager", checkChatForLoadoutCommand )
+
+local function equipLoadoutOnPvpEnter(ply)
+    local equipped = getPlayerEquippedLoadout( ply )
+    local loadout = CFC_Loadouts:getLoadout( ply, equipped )
+
+    log(ply:Nick() .. " entering PvP... Current loadout: " .. equipped, DEBUG)
+
+    CFC_Loadouts:equipLoadout( ply, loadout )
+end
+hook.Remove( "CFC_PlayerEnterPvp", "CFC_LoadoutManager" )
+hook.Add( "CFC_PlayerEnterPvp", "CFC_LoadoutManager", equipLoadoutOnPvpEnter )
+
+local function equipLoadoutIfPvp(ply)
+    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return end
+
+    LoadoutCommandFunctions['equip']()
+    log(ply:Nick() .. " spawned in PvP... Current loadout: " .. getPlayerEquippedLoadout(ply), DEBUG)
+end
+hook.Remove( "OnPlayerSpawn", "CFC_LoadoutManager" )
+hook.Add( "OnPlayerSpawn", "CFC_LoadoutManager", equipLoadout )
+
+local function giveDefaultLoadoutOnJoin(ply)
+    if playerLoadoutExists( ply, 'default' ) then return setPlayerEquippedLoadout( ply, 'default' ) end
+
+    createDefaultLoadoutForPlayer( ply )
+end
+hook.Remove( "PlayerInitialSpawn", "CFC_LoadoutManager" )
+hook.Add( "PlayerInitialSpawn", "CFC_LoadoutManager", giveDefaultLoadoutOnJoin )
+
 
 -- END HOOKS --
 
