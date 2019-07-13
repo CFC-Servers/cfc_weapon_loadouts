@@ -7,6 +7,13 @@ LoadoutCommands["create"] = "saveloadout"
 LoadoutCommands["delete"] = "deleteloadout"
 LoadoutCommands["list"]   = "loadouts"
 LoadoutCommands["equip"]  = "loadout"
+LoadoutCommands["help"] = "help"
+
+local LoadoutDescriptions = {}
+LoadoutDescriptions["create"] = "Creates a loadout of the name provided (A-Z, 0-9 only)"
+LoadoutDescriptions["delete"] = "Deletes the loadout of the name provided"
+LoadoutDescriptions["list"]   = "List all existing loadouts in chat"
+LoadoutDescriptions["equip"]  = "Equip the loadout of the name provided"
 
 local LOADOUT_DIR = "cfc_weapon_loadouts"
 
@@ -146,7 +153,7 @@ local function getWeaponsFromLoadoutFile(filename)
     log("Reading " .. filename .. "!", DEBUG)
 
     local weaponsString = file.Read( filename )
-    if weaponsString == nil then return log( "ERROR! Could not read " .. filename .. "!", ERROR) end
+    if weaponsString == nil then return log( "ERROR! Could not read " .. filename .. "!", ERROR ) end
 
     return splitByNewLine( weaponsString )
 end
@@ -200,6 +207,8 @@ local function setPlayerEquippedLoadout(ply, loadout)
     if not IsValidPlayer( ply ) then return end
 
     ply:SetNWString( "CFC_Loadout", loadout )
+
+    ply:ChatPrint('The loadout "' .. loadout .. '" will be equipped next time you spawn in PvP!')
 end
 
 local function getPlayerEquippedLoadout(ply)
@@ -244,14 +253,9 @@ end
 function CFC_Loadouts:getLoadout(ply, loadoutName)
     if not IsValidPlayer( ply ) then return end
 
-    if not playerLoadoutExists( ply, loadoutName ) then
-        ply:ChatPrint( 'Loadout "' .. loadoutName .. '" does not exist!' )
-        return
-    end
+    if not playerLoadoutExists( ply, loadoutName ) then return ply:ChatPrint( 'Loadout "' .. loadoutName .. '" does not exist!' ) end
 
-    local loadout = initializeLoadoutFromFile( ply, loadoutName )
-
-    return loadout
+    return initializeLoadoutFromFile( ply, loadoutName )
 end
 
 function CFC_Loadouts:createLoadout(ply, loadoutName)
@@ -260,22 +264,13 @@ function CFC_Loadouts:createLoadout(ply, loadoutName)
     -- You can't create a loadout when you're dead, dumbass
     if not ply:Alive() then return end
 
-    local loadout = initializeNewLoadout( ply, loadoutName )
-
-    return loadout
+    return initializeNewLoadout( ply, loadoutName )
 end
 
 function CFC_Loadouts:equipLoadout(ply, loadout)
     if not IsValidPlayer( ply ) then return end
 
-    if loadout.name ~= 'default' and getPlayerEquippedLoadout( ply ) == loadout.name then
-        ply:ChatPrint( 'You already have ' .. loadout.name .. ' equipped!' )
-        return
-    end
-
-    setPlayerEquippedLoadout( ply, loadout.name )
-
-    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return end
+    if getPlayerEquippedLoadout( ply ) ~= loadout.name then setPlayerEquippedLoadout( ply, loadout.name ) end
 
     -- TODO: Maybe not take literally everything
     ply:StripWeapons()
@@ -283,6 +278,8 @@ function CFC_Loadouts:equipLoadout(ply, loadout)
     for _, weaponClass in pairs( loadout.weapons ) do
         if weaponClass then ply:Give( weaponClass ) end
     end
+
+    ply:ChatPrint('Loadout "' .. loadout.name .. '" equipped.')
 
     return true
 end
@@ -361,7 +358,9 @@ LoadoutCommandFunctions["equip"] = function(ply, loadoutName)
     local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
     if loadout == nil then return end
 
-    if CFC_Loadouts:equipLoadout( ply, loadout ) then ply:ChatPrint('Loadout "' .. loadout.name .. '" equipped.') end
+    setPlayerEquippedLoadout( ply, loadoutName )
+
+    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint('The loadout "' .. loadout.name .. '" will be equipped when you enter PvP!') end
 end
 
 -- END LOADOUT COMMAND FUNCTIONS --
@@ -432,11 +431,14 @@ hook.Add( "CFC_PlayerEnterPvp", "CFC_LoadoutManager", equipLoadoutOnPvpEnter )
 local function equipLoadoutIfPvp(ply)
     if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return end
 
-    LoadoutCommandFunctions['equip']()
-    log(ply:Nick() .. " spawned in PvP... Current loadout: " .. getPlayerEquippedLoadout(ply), DEBUG)
+    local equipped = getPlayerEquippedLoadout(ply)
+    local loadout = CFC_Loadouts:getLoadout( ply, equipped )
+    CFC_Loadouts:equipLoadout( ply, loadout )
+
+    log(ply:Nick() .. " spawned in PvP... Current loadout: " .. equipped, DEBUG)
 end
-hook.Remove( "OnPlayerSpawn", "CFC_LoadoutManager" )
-hook.Add( "OnPlayerSpawn", "CFC_LoadoutManager", equipLoadout )
+hook.Remove( "PlayerSpawn", "CFC_LoadoutManager" )
+hook.Add( "PlayerSpawn", "CFC_LoadoutManager", equipLoadoutIfPvp )
 
 local function giveDefaultLoadoutOnJoin(ply)
     if playerLoadoutExists( ply, 'default' ) then return setPlayerEquippedLoadout( ply, 'default' ) end
