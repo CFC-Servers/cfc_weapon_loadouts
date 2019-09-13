@@ -7,13 +7,14 @@ LoadoutCommands["create"] = "saveloadout"
 LoadoutCommands["delete"] = "deleteloadout"
 LoadoutCommands["list"]   = "loadouts"
 LoadoutCommands["equip"]  = "loadout"
-LoadoutCommands["help"] = "help"
+LoadoutCommands["help"] = "loadouthelp"
 
 local LoadoutDescriptions = {}
 LoadoutDescriptions["create"] = "Creates a loadout of the name provided (A-Z, 0-9 only)"
 LoadoutDescriptions["delete"] = "Deletes the loadout of the name provided"
 LoadoutDescriptions["list"]   = "List all existing loadouts in chat"
 LoadoutDescriptions["equip"]  = "Equip the loadout of the name provided"
+LoadoutDescriptions["help"]       = "Shows help message"
 
 local LOADOUT_DIR = "cfc_weapon_loadouts"
 
@@ -107,7 +108,6 @@ end
 local function playerLoadoutExists(ply, loadoutName)
     local loadoutDirectory = getPlayerLoadoutDirectory( ply )
     local filename = getLoadoutFilename( loadoutName )
-    
     local loadoutFilepath = makePath( loadoutDirectory, filename )
 
     log("Checking if " .. loadoutFilepath .. " exists...", DEBUG)
@@ -363,6 +363,14 @@ LoadoutCommandFunctions["equip"] = function(ply, loadoutName)
     if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint('The loadout "' .. loadout.name .. '" will be equipped when you enter PvP!') end
 end
 
+LoadoutCommandFunctions["help"] = function(ply)
+    for operation, command in pairs(LoadoutCommands) do
+        local chatCommand = LOADOUT_COMMAND_PREFIX .. command
+        local description = LoadoutDescriptions[operation]
+        local message = string.format ('%s     %s', chatCommand, description )
+        ply:ChatPrint( message )
+    end
+end
 -- END LOADOUT COMMAND FUNCTIONS --
 
 
@@ -383,7 +391,9 @@ local function getChatCommand(chatString)
     -- A chat command that isn't just "list" needs exactly 2 words
     local commandSplitBySpaces = string.Split( lowercaseCommandString, " " )
     if table.Count( commandSplitBySpaces ) ~= 2 then
-        if commandSplitBySpaces[1] == LoadoutCommands["list"] then return "list" else return nil end
+        if commandSplitBySpaces[1] == LoadoutCommands["list"] then return "list" end
+        if commandSplitBySpaces[1] == LoadoutCommands["help"] then return "help" end
+        return nil
     end
 
     local spokenCommand, loadoutName = commandSplitBySpaces[1], commandSplitBySpaces[2]
@@ -408,7 +418,9 @@ local function checkChatForLoadoutCommand( ply, text, team )
     local operation, loadoutName = getChatCommand( text )
     if operation == nil then return end
 
-    if loadoutName and not isValidLoadoutName( loadoutName ) then return ply:ChatPrint("Please use only the characters [0-9], _, and [A-Z] for your loadout names!") end
+    if loadoutName and not isValidLoadoutName( loadoutName ) then 
+        return ply:ChatPrint("Please use only the characters [0-9], _, and [A-Z] for your loadout names!") 
+    end
 
     log("Found chat command " .. operation, DEBUG)
 
