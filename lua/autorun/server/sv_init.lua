@@ -336,7 +336,7 @@ LoadoutCommandFunctions["list"] = function( ply, loadoutName )
 
     -- List all loadouts
     local loadoutDirectory, _ = getPlayerLoadoutDirectory( ply )
-    local loadoutFiles, _ = file.Find( loadoutDirectory .. "/ * .txt", "DATA" )
+    local loadoutFiles, _ = file.Find( loadoutDirectory .. "/*.txt", "DATA" )
 
     log( "Listing all loadouts for " .. ply:SteamID() .. "( " .. ply:SteamID64() .. " )", DEBUG )
     for _, filename in ipairs( loadoutFiles ) do
