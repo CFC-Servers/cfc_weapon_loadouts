@@ -10,21 +10,21 @@ LoadoutCommands["equip"]  = "loadout"
 LoadoutCommands["help"] = "help"
 
 local LoadoutDescriptions = {}
-LoadoutDescriptions["create"] = "Creates a loadout of the name provided (A-Z, 0-9 only)"
+LoadoutDescriptions["create"] = "Creates a loadout of the name provided ( A-Z, 0-9 only )"
 LoadoutDescriptions["delete"] = "Deletes the loadout of the name provided"
 LoadoutDescriptions["list"]   = "List all existing loadouts in chat"
 LoadoutDescriptions["equip"]  = "Equip the loadout of the name provided"
 
 local LOADOUT_DIR = "cfc_weapon_loadouts"
 
-local DEFAULT_LOADOUT = "weapon_fists\n" ..    
+local DEFAULT_LOADOUT = "weapon_fists\n" ..
                         "weapon_pistol\n" ..
                         "weapon_crowbar\n" ..
                         "weapon_physgun\n" ..
                         "weapon_physcannon"
 
 
--- LOGGING -- 
+-- LOGGING --
 
 local DEBUG = 1
 local INFO = 2
@@ -32,35 +32,35 @@ local ERROR = 3
 
 local DEBUG_ENABLED = true
 
-local function log(msg, level)
+local function log( msg, level )
     if level == nil then level = INFO end
 
     if level == DEBUG and DEBUG_ENABLED then
-        print( "[CFC Loadouts] (DEBUG): " .. msg )
+        print( "[CFC Loadouts] ( DEBUG ): " .. msg )
     elseif level == INFO then
-        print( "[CFC Loadouts] (INFO): " .. msg )
+        print( "[CFC Loadouts] ( INFO ): " .. msg )
     elseif level == ERROR then
-        print( "[CFC Loadouts] (ERROR): " .. msg )
+        print( "[CFC Loadouts] ( ERROR ): " .. msg )
     end
 end
 
--- END LOGGING -- 
+-- END LOGGING --
 
 
-local function IsValidPlayer(ply)
+local function IsValidPlayer( ply )
     local isValidPlayer = IsValid( ply ) and ply:IsPlayer()
 
     return isValidPlayer
 end
 
-local function splitByNewLine(toSplit)
-    return string.Split(toSplit, "\n")
+local function splitByNewLine( toSplit )
+    return string.Split( toSplit, "\n" )
 end
 
 
 -- FILE OPERATIONS --
 
-local function makePath(...)
+local function makePath( ... )
     local madePath = ""
     local args = {...}
 
@@ -76,8 +76,8 @@ local function makePath(...)
 end
 
 -- NOTE: Creates dir in "/garrysmod/data/"
-local function createDirectory(directory)
-    log("Creating directory: " .. directory, DEBUG)
+local function createDirectory( directory )
+    log( "Creating directory: " .. directory, DEBUG )
     file.CreateDir( directory )
 end
 
@@ -93,46 +93,46 @@ local function createBaseLoadoutDirectory()
     createDirectory( LOADOUT_DIR )
 end
 
-local function getPlayerLoadoutDirectory(ply)
+local function getPlayerLoadoutDirectory( ply )
     local loadoutDirectory = makePath( LOADOUT_DIR, ply:SteamID64() )
     local loadoutDirectoryExists = existsInDataDirectory( loadoutDirectory )
 
     return loadoutDirectory, loadoutDirectoryExists
 end
 
-local function getLoadoutFilename(loadoutPath)
+local function getLoadoutFilename( loadoutPath )
     return loadoutPath .. ".txt"
 end
 
-local function playerLoadoutExists(ply, loadoutName)
+local function playerLoadoutExists( ply, loadoutName )
     local loadoutDirectory = getPlayerLoadoutDirectory( ply )
     local filename = getLoadoutFilename( loadoutName )
-    
+
     local loadoutFilepath = makePath( loadoutDirectory, filename )
 
-    log("Checking if " .. loadoutFilepath .. " exists...", DEBUG)
+    log( "Checking if " .. loadoutFilepath .. " exists...", DEBUG )
 
     return existsInDataDirectory( loadoutFilepath )
 end
 
-local function createFile(filename, text)
+local function createFile( filename, text )
     file.Write( filename, text )
 
-    timer.Simple(2, function()
-        if not existsInDataDirectory( filename ) then log( "ERROR! Failed to create file " .. filename, ERROR) end
-    end)
+    timer.Simple( 2, function()
+        if not existsInDataDirectory( filename ) then log( "ERROR! Failed to create file " .. filename, ERROR ) end
+    end )
 end
 
-local function createLoadoutFile(ply, loadoutPath, weaponsString)
+local function createLoadoutFile( ply, loadoutPath, weaponsString )
     local filename = getLoadoutFilename( loadoutPath )
-    
+
     createFile( filename, weaponsString )
 end
 
 -- END FILE OPERATIONS --
 
 
-local function createWeaponsString(weaponsTable)
+local function createWeaponsString( weaponsTable )
     local weaponsString = ""
 
     for _, wep in pairs( weaponsTable ) do
@@ -143,14 +143,14 @@ local function createWeaponsString(weaponsTable)
     return weaponsString
 end
 
-local function getPlayerWeaponsAsStringAndTable(ply)
+local function getPlayerWeaponsAsStringAndTable( ply )
     local weaponsString = createWeaponsString( ply:GetWeapons() )
 
     return weaponsString, splitByNewLine( weaponsString )
 end
 
-local function getWeaponsFromLoadoutFile(filename)
-    log("Reading " .. filename .. "!", DEBUG)
+local function getWeaponsFromLoadoutFile( filename )
+    log( "Reading " .. filename .. "!", DEBUG )
 
     local weaponsString = file.Read( filename )
     if weaponsString == nil then return log( "ERROR! Could not read " .. filename .. "!", ERROR ) end
@@ -159,9 +159,9 @@ local function getWeaponsFromLoadoutFile(filename)
 end
 
 local function listLoadout( loadout )
-    log("Listing loadout " .. loadout.filename, DEBUG)
+    log( "Listing loadout " .. loadout.filename, DEBUG )
 
-    loadout.owner:ChatPrint("LOADOUT (" .. loadout.name .. "):")
+    loadout.owner:ChatPrint( "LOADOUT ( " .. loadout.name .. " ):" )
 
     -- TODO: Make this not a totally shit way to report a loadout
     for _, class in ipairs( loadout.weapons ) do
@@ -169,12 +169,12 @@ local function listLoadout( loadout )
     end
 end
 
-local function initializeLoadout(ply, loadoutName)
+local function initializeLoadout( ply, loadoutName )
     local playerLoadoutDirectory, directoryExists = getPlayerLoadoutDirectory( ply )
     if not directoryExists then createDirectory( playerLoadoutDirectory ) end
-    
-    local filename = makePath( playerLoadoutDirectory, getLoadoutFilename(loadoutName) )
-    
+
+    local filename = makePath( playerLoadoutDirectory, getLoadoutFilename( loadoutName ) )
+
     local loadout = {}
     loadout["path"] = path
     loadout["name"] = loadoutName
@@ -184,7 +184,7 @@ local function initializeLoadout(ply, loadoutName)
     return loadout
 end
 
-local function initializeLoadoutFromFile(ply, loadoutName)
+local function initializeLoadoutFromFile( ply, loadoutName )
     local loadout = initializeLoadout( ply, loadoutName )
     loadout["weapons"] = getWeaponsFromLoadoutFile( loadout.filename )
 
@@ -192,7 +192,7 @@ local function initializeLoadoutFromFile(ply, loadoutName)
 end
 
 
-local function initializeNewLoadout(ply, loadoutName)
+local function initializeNewLoadout( ply, loadoutName )
     local loadout = initializeLoadout( ply, loadoutName )
     local weaponsString, weaponsTable = getPlayerWeaponsAsStringAndTable( ply )
 
@@ -203,21 +203,21 @@ local function initializeNewLoadout(ply, loadoutName)
     return loadout
 end
 
-local function setPlayerEquippedLoadout(ply, loadout)
+local function setPlayerEquippedLoadout( ply, loadout )
     if not IsValidPlayer( ply ) then return end
 
     ply:SetNWString( "CFC_Loadout", loadout )
 
-    ply:ChatPrint('The loadout "' .. loadout .. '" will be equipped next time you spawn in PvP!')
+    ply:ChatPrint( 'The loadout "' .. loadout .. '" will be equipped next time you spawn in PvP!' )
 end
 
-local function getPlayerEquippedLoadout(ply)
+local function getPlayerEquippedLoadout( ply )
     if not IsValidPlayer( ply ) then return end
 
     return ply:GetNWString( "CFC_Loadout", "" )
 end
 
-local function createDefaultLoadoutForPlayer(ply)
+local function createDefaultLoadoutForPlayer( ply )
     local playerLoadoutDirectory = getPlayerLoadoutDirectory( ply )
     local weaponsString = DEFAULT_LOADOUT
 
@@ -236,21 +236,21 @@ end
 --  "path": /directory/to/path
 --  "name": "name_of_loadout"
 --  "filename": "name_of_loadout".txt
---  "weight": weight (TODO)
+--  "weight": weight ( TODO )
 --  "owner": Player
 --  "weapons": {[1] m9k_something, [2] m9k_else}
 
 CFC_Loadouts  = {}
 
-local function IsValidLoadout(loadout)
+local function IsValidLoadout( loadout )
     if #loadout.weapons == 0 then return false end
-    
+
     if not IsValidPlayer( loadout.owner ) then return false end
 
     return true
 end
 
-function CFC_Loadouts:getLoadout(ply, loadoutName)
+function CFC_Loadouts:getLoadout( ply, loadoutName )
     if not IsValidPlayer( ply ) then return end
 
     if not playerLoadoutExists( ply, loadoutName ) then return ply:ChatPrint( 'Loadout "' .. loadoutName .. '" does not exist!' ) end
@@ -258,16 +258,16 @@ function CFC_Loadouts:getLoadout(ply, loadoutName)
     return initializeLoadoutFromFile( ply, loadoutName )
 end
 
-function CFC_Loadouts:createLoadout(ply, loadoutName)
+function CFC_Loadouts:createLoadout( ply, loadoutName )
     if not IsValidPlayer( ply ) then return end
-    
+
     -- You can't create a loadout when you're dead, dumbass
     if not ply:Alive() then return end
 
     return initializeNewLoadout( ply, loadoutName )
 end
 
-function CFC_Loadouts:equipLoadout(ply, loadout)
+function CFC_Loadouts:equipLoadout( ply, loadout )
     if not IsValidPlayer( ply ) then return end
 
     if getPlayerEquippedLoadout( ply ) ~= loadout.name then setPlayerEquippedLoadout( ply, loadout.name ) end
@@ -279,13 +279,13 @@ function CFC_Loadouts:equipLoadout(ply, loadout)
         if weaponClass then ply:Give( weaponClass ) end
     end
 
-    ply:ChatPrint('Loadout "' .. loadout.name .. '" equipped.')
+    ply:ChatPrint( 'Loadout "' .. loadout.name .. '" equipped.' )
 
     return true
 end
 
 
-function CFC_Loadouts:deleteLoadout(loadout)
+function CFC_Loadouts:deleteLoadout( loadout )
     file.Delete( loadout.filename )
 
     loadout = nil
@@ -300,8 +300,8 @@ end
 
 local LoadoutCommandFunctions = {}
 
-LoadoutCommandFunctions["create"] = function(ply, loadoutName)
-    log("Creating loadout " .. loadoutName, DEBUG)
+LoadoutCommandFunctions["create"] = function( ply, loadoutName )
+    log( "Creating loadout " .. loadoutName, DEBUG )
 
     if playerLoadoutExists( ply, loadoutName ) then
         local deleteCommand = LOADOUT_COMMAND_PREFIX .. LoadoutCommands['delete'] .. " " .. loadoutName
@@ -315,8 +315,8 @@ LoadoutCommandFunctions["create"] = function(ply, loadoutName)
     if loadout then ply:ChatPrint( 'Loadout "' .. loadoutName .. '" created.' ) end
 end
 
-LoadoutCommandFunctions["delete"] = function(ply, loadoutName)
-    log("Deleting loadout " .. loadoutName, DEBUG)
+LoadoutCommandFunctions["delete"] = function( ply, loadoutName )
+    log( "Deleting loadout " .. loadoutName, DEBUG )
 
     local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
     if loadout == nil then return end
@@ -325,8 +325,8 @@ LoadoutCommandFunctions["delete"] = function(ply, loadoutName)
 end
 
 -- I actually hate this
-LoadoutCommandFunctions["list"] = function(ply, loadoutName)
-    if loadoutName ~= nil then 
+LoadoutCommandFunctions["list"] = function( ply, loadoutName )
+    if loadoutName ~= nil then
         local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
 
         if loadout then listLoadout( loadout ) end
@@ -336,13 +336,13 @@ LoadoutCommandFunctions["list"] = function(ply, loadoutName)
 
     -- List all loadouts
     local loadoutDirectory, _ = getPlayerLoadoutDirectory( ply )
-    local loadoutFiles, _ = file.Find( loadoutDirectory .. "/*.txt", "DATA" )
+    local loadoutFiles, _ = file.Find( loadoutDirectory .. "/ * .txt", "DATA" )
 
-    log("Listing all loadouts for " .. ply:SteamID() .. "(" .. ply:SteamID64() .. ")", DEBUG)
+    log( "Listing all loadouts for " .. ply:SteamID() .. "( " .. ply:SteamID64() .. " )", DEBUG )
     for _, filename in ipairs( loadoutFiles ) do
         loadoutName = string.Replace( filename, '.txt', '' )
 
-        log("Getting loadout " .. loadoutName, DEBUG)
+        log( "Getting loadout " .. loadoutName, DEBUG )
 
         local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
 
@@ -350,9 +350,9 @@ LoadoutCommandFunctions["list"] = function(ply, loadoutName)
     end
 end
 
-LoadoutCommandFunctions["equip"] = function(ply, loadoutName)
-    log("Equipping loadout " .. loadoutName, DEBUG)
- 
+LoadoutCommandFunctions["equip"] = function( ply, loadoutName )
+    log( "Equipping loadout " .. loadoutName, DEBUG )
+
     if loadoutName == nil then loadoutName = getPlayerEquippedLoadout( ply ) end
 
     local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
@@ -360,7 +360,7 @@ LoadoutCommandFunctions["equip"] = function(ply, loadoutName)
 
     setPlayerEquippedLoadout( ply, loadoutName )
 
-    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint('The loadout "' .. loadout.name .. '" will be equipped when you enter PvP!') end
+    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint( 'The loadout "' .. loadout.name .. '" will be equipped when you enter PvP!' ) end
 end
 
 -- END LOADOUT COMMAND FUNCTIONS --
@@ -368,13 +368,13 @@ end
 
 -- CHAT FUNCTIONS --
 
-local function isValidLoadoutName(loadoutName)
+local function isValidLoadoutName( loadoutName )
     -- Only alnum
     return string.find( loadoutName, "[^%w]" ) == nil
 end
 
 -- Returns the type of chat command and the loadout if valid, nil if not
-local function getChatCommand(chatString)
+local function getChatCommand( chatString )
     if not string.StartWith( chatString, LOADOUT_COMMAND_PREFIX ) then return end
 
     local prefixRemoved = string.sub( chatString, 2 )
@@ -393,8 +393,8 @@ local function getChatCommand(chatString)
             return operation, loadoutName
         end
     end
-    
-    log('No valid loadout command found in chat string "' .. chatString .. '"!', DEBUG)
+
+    log( 'No valid loadout command found in chat string "' .. chatString .. '"!', DEBUG )
 end
 
 -- END CHAT FUNCTIONS --
@@ -402,45 +402,45 @@ end
 
 -- HOOKS --
 local function checkChatForLoadoutCommand( ply, text, team )
-    log("Checking if valid player...", DEBUG)
+    log( "Checking if valid player...", DEBUG )
     if not IsValidPlayer( ply ) then return end
 
     local operation, loadoutName = getChatCommand( text )
     if operation == nil then return end
 
-    if loadoutName and not isValidLoadoutName( loadoutName ) then return ply:ChatPrint("Please use only the characters [0-9], _, and [A-Z] for your loadout names!") end
+    if loadoutName and not isValidLoadoutName( loadoutName ) then return ply:ChatPrint( "Please use only the characters [0-9], _, and [A-Z] for your loadout names!" ) end
 
-    log("Found chat command " .. operation, DEBUG)
+    log( "Found chat command " .. operation, DEBUG )
 
     LoadoutCommandFunctions[operation]( ply, loadoutName )
 end
 hook.Remove( "PlayerSay", "CFC_LoadoutManager" )
 hook.Add( "PlayerSay", "CFC_LoadoutManager", checkChatForLoadoutCommand )
 
-local function equipLoadoutOnPvpEnter(ply)
+local function equipLoadoutOnPvpEnter( ply )
     local equipped = getPlayerEquippedLoadout( ply )
     local loadout = CFC_Loadouts:getLoadout( ply, equipped )
 
-    log(ply:Nick() .. " entering PvP... Current loadout: " .. equipped, DEBUG)
+    log( ply:Nick() .. " entering PvP... Current loadout: " .. equipped, DEBUG )
 
     CFC_Loadouts:equipLoadout( ply, loadout )
 end
 hook.Remove( "CFC_PlayerEnterPvp", "CFC_LoadoutManager" )
 hook.Add( "CFC_PlayerEnterPvp", "CFC_LoadoutManager", equipLoadoutOnPvpEnter )
 
-local function equipLoadoutIfPvp(ply)
+local function equipLoadoutIfPvp( ply )
     if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return end
 
-    local equipped = getPlayerEquippedLoadout(ply)
+    local equipped = getPlayerEquippedLoadout( ply )
     local loadout = CFC_Loadouts:getLoadout( ply, equipped )
     CFC_Loadouts:equipLoadout( ply, loadout )
 
-    log(ply:Nick() .. " spawned in PvP... Current loadout: " .. equipped, DEBUG)
+    log( ply:Nick() .. " spawned in PvP... Current loadout: " .. equipped, DEBUG )
 end
 hook.Remove( "PlayerSpawn", "CFC_LoadoutManager" )
 hook.Add( "PlayerSpawn", "CFC_LoadoutManager", equipLoadoutIfPvp )
 
-local function giveDefaultLoadoutOnJoin(ply)
+local function giveDefaultLoadoutOnJoin( ply )
     if playerLoadoutExists( ply, 'default' ) then return setPlayerEquippedLoadout( ply, 'default' ) end
 
     createDefaultLoadoutForPlayer( ply )
@@ -456,6 +456,6 @@ hook.Add( "PlayerInitialSpawn", "CFC_LoadoutManager", giveDefaultLoadoutOnJoin )
 
 if not baseLoadoutDirectoryExists() then createBaseLoadoutDirectory() end
 
-log("Initialized.")
+log( "Initialized." )
 
 -- END STARTUP --
