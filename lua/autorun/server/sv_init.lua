@@ -208,7 +208,7 @@ local function setPlayerEquippedLoadout( ply, loadout )
 
     ply:SetNWString( "CFC_Loadout", loadout )
 
-    ply:ChatPrint( 'The loadout "' .. loadout .. '" will be equipped next time you spawn in PvP!' )
+    ply:ChatPrint( "The loadout \"" .. loadout .. "\" will be equipped next time you spawn in PvP!" )
 end
 
 local function getPlayerEquippedLoadout( ply )
@@ -221,11 +221,11 @@ local function createDefaultLoadoutForPlayer( ply )
     local playerLoadoutDirectory = getPlayerLoadoutDirectory( ply )
     local weaponsString = DEFAULT_LOADOUT
 
-    local filePath = makePath( playerLoadoutDirectory, 'default' )
+    local filePath = makePath( playerLoadoutDirectory, "default" )
 
     createLoadoutFile( ply, filePath, weaponsString )
 
-    setPlayerEquippedLoadout( ply, 'default' )
+    setPlayerEquippedLoadout( ply, "default" )
 end
 
 
@@ -253,7 +253,7 @@ end
 function CFC_Loadouts:getLoadout( ply, loadoutName )
     if not IsValidPlayer( ply ) then return end
 
-    if not playerLoadoutExists( ply, loadoutName ) then return ply:ChatPrint( 'Loadout "' .. loadoutName .. '" does not exist!' ) end
+    if not playerLoadoutExists( ply, loadoutName ) then return ply:ChatPrint( "Loadout \"" .. loadoutName .. "\" does not exist!" ) end
 
     return initializeLoadoutFromFile( ply, loadoutName )
 end
@@ -279,7 +279,7 @@ function CFC_Loadouts:equipLoadout( ply, loadout )
         if weaponClass then ply:Give( weaponClass ) end
     end
 
-    ply:ChatPrint( 'Loadout "' .. loadout.name .. '" equipped.' )
+    ply:ChatPrint( "Loadout \"" .. loadout.name .. "\" equipped." )
 
     return true
 end
@@ -304,15 +304,15 @@ LoadoutCommandFunctions["create"] = function( ply, loadoutName )
     log( "Creating loadout " .. loadoutName, DEBUG )
 
     if playerLoadoutExists( ply, loadoutName ) then
-        local deleteCommand = LOADOUT_COMMAND_PREFIX .. LoadoutCommands['delete'] .. " " .. loadoutName
-        local deleteMessage = 'You cannot overwrite a loadout! Please use the command "' .. deleteCommand .. '" before re-creating ' .. loadoutName
+        local deleteCommand = LOADOUT_COMMAND_PREFIX .. LoadoutCommands["delete"] .. " " .. loadoutName
+        local deleteMessage = "You cannot overwrite a loadout! Please use the command \"" .. deleteCommand .. "\" before re-creating " .. loadoutName
 
         ply:ChatPrint( deleteMessage )
         return
     end
 
     local loadout = CFC_Loadouts:createLoadout( ply, loadoutName )
-    if loadout then ply:ChatPrint( 'Loadout "' .. loadoutName .. '" created.' ) end
+    if loadout then ply:ChatPrint( "Loadout \"" .. loadoutName .. "\" created." ) end
 end
 
 LoadoutCommandFunctions["delete"] = function( ply, loadoutName )
@@ -321,7 +321,7 @@ LoadoutCommandFunctions["delete"] = function( ply, loadoutName )
     local loadout = CFC_Loadouts:getLoadout( ply, loadoutName )
     if loadout == nil then return end
 
-    if CFC_Loadouts:deleteLoadout( loadout ) then ply:ChatPrint( 'Loadout "' .. loadoutName .. '" deleted.' ) end
+    if CFC_Loadouts:deleteLoadout( loadout ) then ply:ChatPrint( "Loadout \"" .. loadoutName .. "\" deleted." ) end
 end
 
 -- I actually hate this
@@ -340,7 +340,7 @@ LoadoutCommandFunctions["list"] = function( ply, loadoutName )
 
     log( "Listing all loadouts for " .. ply:SteamID() .. "( " .. ply:SteamID64() .. " )", DEBUG )
     for _, filename in ipairs( loadoutFiles ) do
-        loadoutName = string.Replace( filename, '.txt', '' )
+        loadoutName = string.Replace( filename, ".txt", "" )
 
         log( "Getting loadout " .. loadoutName, DEBUG )
 
@@ -360,7 +360,7 @@ LoadoutCommandFunctions["equip"] = function( ply, loadoutName )
 
     setPlayerEquippedLoadout( ply, loadoutName )
 
-    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint( 'The loadout "' .. loadout.name .. '" will be equipped when you enter PvP!' ) end
+    if not ply:GetNWBool( "CFC_PvP_Mode", false ) then return ply:ChatPrint( "The loadout \"" .. loadout.name .. "\" will be equipped when you enter PvP!" ) end
 end
 
 -- END LOADOUT COMMAND FUNCTIONS --
@@ -394,7 +394,7 @@ local function getChatCommand( chatString )
         end
     end
 
-    log( 'No valid loadout command found in chat string "' .. chatString .. '"!', DEBUG )
+    log( "No valid loadout command found in chat string \"" .. chatString .. "\"!", DEBUG )
 end
 
 -- END CHAT FUNCTIONS --
@@ -441,7 +441,7 @@ hook.Remove( "PlayerSpawn", "CFC_LoadoutManager" )
 hook.Add( "PlayerSpawn", "CFC_LoadoutManager", equipLoadoutIfPvp )
 
 local function giveDefaultLoadoutOnJoin( ply )
-    if playerLoadoutExists( ply, 'default' ) then return setPlayerEquippedLoadout( ply, 'default' ) end
+    if playerLoadoutExists( ply, "default" ) then return setPlayerEquippedLoadout( ply, "default" ) end
 
     createDefaultLoadoutForPlayer( ply )
 end
