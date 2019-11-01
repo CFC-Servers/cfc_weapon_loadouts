@@ -242,14 +242,6 @@ end
 
 CFC_Loadouts  = {}
 
-local function IsValidLoadout( loadout )
-    if #loadout.weapons == 0 then return false end
-
-    if not IsValidPlayer( loadout.owner ) then return false end
-
-    return true
-end
-
 function CFC_Loadouts:getLoadout( ply, loadoutName )
     if not IsValidPlayer( ply ) then return end
 
