@@ -22,16 +22,20 @@ local function openLoadout()
     weaponList:SetSize( 200, window:GetTall() - 40 )
     weaponList:AddColumn( "Selected Weapons" )
 
+    function weaponList:DoDoubleClick( line )
+        weaponList:RemoveLine( line )
+    end
+
     local weaponEntry = vgui.Create ( "DTextEntry" , window )
     weaponEntry:SetPos( 215, 30 )
     weaponEntry:SetSize( 200, 20 )
 
     local weaponAddButton = vgui.Create( "DButton", window )
-    weaponAddButton:SetPos( 215,50 )
+    weaponAddButton:SetPos( 215,60 )
     weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
     weaponAddButton.DoClick = function()
-
+        weaponList:AddLine( weaponEntry:GetValue() )
     end
 
     local button = vgui.Create( "DButton", window )
@@ -39,7 +43,7 @@ local function openLoadout()
     button.DoClick = function() window:Close() end
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
-
+    
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
