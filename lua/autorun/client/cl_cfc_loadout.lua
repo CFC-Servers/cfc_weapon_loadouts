@@ -25,7 +25,14 @@ local function openLoadout()
     local weaponEntry = vgui.Create ( "DTextEntry" , window )
     weaponEntry:SetPos( 215, 30 )
     weaponEntry:SetSize( 200, 20 )
-    
+
+    local weaponAddButton = vgui.Create( "DButton", window )
+    weaponAddButton:SetPos( 215,50 )
+	weaponAddButton:SetSize( 200, 20 )
+    weaponAddButton:SetText( "Add weapon" )
+	weaponAddButton.DoClick = function()
+
+    end
 
     local button = vgui.Create( "DButton", window )
 	button:SetText( "Close" )
