@@ -28,17 +28,17 @@ local function openLoadout()
 
     local weaponAddButton = vgui.Create( "DButton", window )
     weaponAddButton:SetPos( 215,50 )
-	weaponAddButton:SetSize( 200, 20 )
+    weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
-	weaponAddButton.DoClick = function()
+    weaponAddButton.DoClick = function()
 
     end
 
     local button = vgui.Create( "DButton", window )
-	button:SetText( "Close" )
-	button.DoClick = function() window:Close() end
-	button:SetSize( 100, 40 )
-	button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
+    button:SetText( "Close" )
+    button.DoClick = function() window:Close() end
+    button:SetSize( 100, 40 )
+    button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
 
 end
 
@@ -53,6 +53,7 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
+
 -- ONLY FOR TESTING-
 openLoadout()
 ----------------
