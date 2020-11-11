@@ -17,6 +17,10 @@ local function openLoadout()
         draw.RoundedBox( 8, 0, 0, w, h, uiColor )
     end
 
+    local weaponList = vgui.Create ( "DListView" , window )
+    weaponList:SetPos( 10, 30 )
+    weaponList:SetSize( 200, window:GetTall() - 40 )
+
     local button = vgui.Create( "DButton", window )
 	button:SetText( "Close" )
 	button.DoClick = function() window:Close() end
