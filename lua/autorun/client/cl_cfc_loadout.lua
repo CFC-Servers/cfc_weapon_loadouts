@@ -53,3 +53,6 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
+-- ONLY FOR TESTING-
+openLoadout()
+----------------
