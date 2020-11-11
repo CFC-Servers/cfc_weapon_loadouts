@@ -4,7 +4,7 @@ local function openLoadout()
     local window = vgui.Create( "DFrame" )
 
     if ScrW() > 640 then
-        window:SetSize( ScrW() * 0.6, ScrH() * 0.6 )
+        window:SetSize( ScrW() * 0.75, ScrH() * 0.75 )
     else
         window:SetSize( 640, 480 )
     end
