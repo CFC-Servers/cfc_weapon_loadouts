@@ -20,6 +20,12 @@ local function openLoadout()
     local weaponList = vgui.Create ( "DListView" , window )
     weaponList:SetPos( 10, 30 )
     weaponList:SetSize( 200, window:GetTall() - 40 )
+    weaponList:AddColumn( "Selected Weapons" )
+
+    local weaponEntry = vgui.Create ( "DTextEntry" , window )
+    weaponEntry:SetPos( 215, 30 )
+    weaponEntry:SetSize( 200, 20 )
+    
 
     local button = vgui.Create( "DButton", window )
 	button:SetText( "Close" )
