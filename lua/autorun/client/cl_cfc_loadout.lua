@@ -20,7 +20,7 @@ local function openLoadout()
     -- Sheet and Panels
 
     local sheet = vgui.Create( "DPropertySheet", window )
-    sheet.Paint = function( self, w, h )  draw.RoundedBox( 4, 0, 0, w, h, Color( 169, 176, 214, self:GetAlpha() ) ) end 
+    sheet.Paint = function( self, w, h )  draw.RoundedBox( 4, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
     sheet:Dock( FILL )
 
     local panel1 = vgui.Create( "DPanel", sheet )
@@ -57,6 +57,7 @@ local function openLoadout()
     weaponAddButton:SetPos( window:GetWide() / 2 - 100,60 )
     weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
+
     weaponAddButton.DoClick = function()
         local weaponClass = ents.FindByClass( weaponEntry:GetValue() )
         if weaponClass[1] ~= nil then
