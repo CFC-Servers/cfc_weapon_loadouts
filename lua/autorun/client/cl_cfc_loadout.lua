@@ -63,7 +63,7 @@ local function openLoadout()
 
     weaponAddButton.DoClick = function()
         local weaponsList = list.Get( "Weapon" )
-        if weaponsList ~= nil then
+        if weaponsList[weaponEntry:GetValue()] then
             weaponList:AddLine( weaponEntry:GetValue() )
             table.insert( currentSelectionWeapons, weaponEntry:GetValue() )
         else
