@@ -4,7 +4,7 @@ local currentSelectionWeapons = {}
 --local allLocalPresets
 
 local function openLoadout()
-
+    PrintTable( list.Get( "Weapon" ) )
     -- Window init
     local window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
@@ -35,8 +35,8 @@ local function openLoadout()
     -- Panel 2 panel2
 
     local weaponList = vgui.Create ( "DListView" , panel2 )
-    weaponList:SetPos( 0, window:GetTall() - 530 )
-    weaponList:SetSize( 150, window:GetTall() - 50 )
+    weaponList:SetPos( 5, 5)
+    weaponList:SetSize( 150, 415 )
     weaponList:AddColumn( "Selected Weapons" )
 
     for _, line in pairs( currentSelectionWeapons ) do
@@ -48,17 +48,17 @@ local function openLoadout()
     end
 
     local presetList = vgui.Create ( "DListView" , panel2 )
-    presetList:SetPos( 450, 5)
-    presetList:SetSize( 150, 500 )
+    presetList:SetPos( 475, 5)
+    presetList:SetSize( 150, 415 )
     presetList:AddColumn( "Saved Presets" )
 
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
-    weaponEntry:SetPos( window:GetWide() / 2 - 150, 30 )
     weaponEntry:SetSize( 200, 20 )
+    weaponEntry:SetPos( ( window:GetWide() - weaponEntry:GetWide() ) / 2, 5 )
 
     local weaponAddButton = vgui.Create( "DButton", panel2 )
-    weaponAddButton:SetPos( (panel2:GetWide() - weaponAddButton:GetWide()) / 2, panel2:GetTall() - weaponAddButton:GetTall() - 440 )
     weaponAddButton:SetSize( 200, 20 )
+    weaponAddButton:SetPos( ( window:GetWide() - weaponAddButton:GetWide() ) / 2, 30 )
     weaponAddButton:SetText( "Add weapon" )
 
     weaponAddButton.DoClick = function()
