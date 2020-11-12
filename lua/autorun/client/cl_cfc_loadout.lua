@@ -4,15 +4,10 @@ local currentSelectionWeapons = {}
 --local allLocalPresets
 
 local function openLoadout()
+
     -- Window init
     local window = vgui.Create( "DFrame" )
-
-    if ScrW() > 640 then
-        window:SetSize( ScrW() * 0.5, ScrH() * 0.5 )
-    else
-        window:SetSize( 640, 480 )
-    end
-
+    window:SetSize( 640, 480 )
     window:Center()
     window:SetTitle( "CFC Loadout" )
     window:MakePopup()
@@ -53,8 +48,8 @@ local function openLoadout()
     end
 
     local presetList = vgui.Create ( "DListView" , panel2 )
-    presetList:SetPos( window:GetWide() - 170, window:GetTall() - 530 )
-    presetList:SetSize( 150, window:GetTall() - 50 )
+    presetList:SetPos( ( window:GetWide() - presetList:GetWide() ) * 0.85, ( window:GetTall() - presetList:GetTall() ) * 0.05 )
+    presetList:SetSize( ( window:GetWide() - presetList:GetWide() ) * 0.2, ( window:GetTall() - presetList:GetTall() ) * 0.8 )
     presetList:AddColumn( "Saved Presets" )
 
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
@@ -88,6 +83,11 @@ local function openLoadout()
     button.DoClick = function() window:Close() end
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
+
+    -- Testing stuff, ignore
+
+    print("Window wide: "..window:GetWide())
+    print("Window tall: "..window:GetTall())
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
