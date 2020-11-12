@@ -5,7 +5,6 @@ local currentSelectionWeapons = {}
 
 local function openLoadout()
     -- Window init
-    PrintTable( currentSelectionWeapons )
     local window = vgui.Create( "DFrame" )
 
     if ScrW() > 640 then
@@ -15,33 +14,32 @@ local function openLoadout()
     end
 
     window:Center()
-    window:SetTitle( "CFC Loadout" )
+    window:SetTitle( "" )
+    window:SetDraggable( false )
+    window:ShowCloseButton( true )
     window:MakePopup()
 
     window.Paint = function( self, w, h )
-        draw.RoundedBox( 8, 0, 0, w, h, uiColor )
+        draw.RoundedBox( 8, 5, 25, w - 10, 50, uiColor )
     end
     -- Sheet and Panels
 
     local sheet = vgui.Create( "DPropertySheet", window )
-    sheet.Paint = function( self, w, h )  draw.RoundedBox( 4, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
     sheet:Dock( FILL )
 
     local panel1 = vgui.Create( "DPanel", sheet )
-    panel1.Paint = function( self, w, h ) end 
-    sheet:AddSheet( "test", panel1, "icon16/cross.png" )
+    sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
 
     local panel2 = vgui.Create( "DPanel", sheet )
-    panel2.Paint = function( self, w, h )  end 
-    sheet:AddSheet( "test 2", panel2, "icon16/tick.png" )
+    sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
 
     -- Panel 1 panel1
 
     -- Panel 2 panel2
 
     local weaponList = vgui.Create ( "DListView" , panel2 )
-    weaponList:SetPos( 20, window:GetTall() - 470 )
-    weaponList:SetSize( 150, window:GetTall() - 40 )
+    weaponList:SetPos( 0, window:GetTall() - 530 )
+    weaponList:SetSize( 150, window:GetTall() - 50 )
     weaponList:AddColumn( "Selected Weapons" )
 
     for _, line in pairs( currentSelectionWeapons ) do
@@ -53,16 +51,16 @@ local function openLoadout()
     end
 
     local presetList = vgui.Create ( "DListView" , panel2 )
-    presetList:SetPos( window:GetWide() - 160, 40 )
-    presetList:SetSize( 150, window:GetTall() - 40 )
+    presetList:SetPos( window:GetWide() - 170, window:GetTall() - 530 )
+    presetList:SetSize( 150, window:GetTall() - 50 )
     presetList:AddColumn( "Saved Presets" )
 
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
-    weaponEntry:SetPos( window:GetWide() / 2 - 100, 30 )
+    weaponEntry:SetPos( window:GetWide() / 2 - 150, 30 )
     weaponEntry:SetSize( 200, 20 )
 
     local weaponAddButton = vgui.Create( "DButton", panel2 )
-    weaponAddButton:SetPos( window:GetWide() / 2 - 100,60 )
+    weaponAddButton:SetPos( (window:GetWide() - weaponAddButton:GetWide()) / 2, window:GetTall() - weaponAddButton:GetTall() - 440 )
     weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
 
@@ -81,13 +79,14 @@ local function openLoadout()
         end
     end
 
-    -- le funny button
+    -- Close button
 
-    local button = vgui.Create( "DButton", window )
-    button:SetText( "Close" )
-    button.DoClick = function() window:Close() end
-    button:SetSize( 100, 40 )
-    button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
+    local closeButton = vgui.Create( "DImageButton", window )
+    closeButton:SetText( "X" )
+    closeButton:SetImage( "icon16/cross.png" )
+    closeButton:SetSize( 16, 16 )
+    closeButton:SetPos( window:GetWide() - closeButton:GetWide() - 13, 45 - closeButton:GetTall() )
+    closeButton.DoClick = function() window:Close() end
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
