@@ -45,7 +45,9 @@ local function openLoadout()
         else
             weaponAddButton:SetText( "Please enter a valid weapon." )
             timer.Simple( 1, function ()
-                weaponAddButton:SetText( "Add weapon" )
+                if IsValid( weaponAddButton ) then
+                    weaponAddButton:SetText( "Add weapon" )
+                end
             end)
         end
     end
