@@ -18,16 +18,16 @@ local function openLoadout()
     -- Sheet and Panels
 
     local sheet = vgui.Create( "DPropertySheet", window )
-    sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end 
+    sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
     local panel2 = vgui.Create( "DPanel", sheet )
-    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
+    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "panel1", panel2, "icon16/cross.png" )
 
     local panel1 = vgui.Create( "DPanel", sheet )
-    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
+    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "panel2", panel1, "icon16/tick.png" )
 
     -- Panel 1 panel1
@@ -97,8 +97,8 @@ local function openLoadout()
 
     -- Testing stuff, ignore
 
-    print("Window wide: "..window:GetWide())
-    print("Window tall: "..window:GetTall())
+    print( "Window wide: "..window:GetWide() )
+    print( "Window tall: "..window:GetTall() )
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
