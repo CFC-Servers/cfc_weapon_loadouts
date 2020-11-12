@@ -1,7 +1,11 @@
 local uiColor = Color( 36, 41, 67, 255 )
 
+local currentSelectionWeapons = {}
+--local allLocalPresets
+
 local function openLoadout()
     -- Window init
+    PrintTable( currentSelectionWeapons )
     local window = vgui.Create( "DFrame" )
 
     if ScrW() > 640 then
@@ -35,10 +39,14 @@ local function openLoadout()
 
     -- Panel 2 panel2
 
-        local weaponList = vgui.Create ( "DListView" , panel2 )
+    local weaponList = vgui.Create ( "DListView" , panel2 )
     weaponList:SetPos( 20, window:GetTall() - 470 )
     weaponList:SetSize( 150, window:GetTall() - 40 )
     weaponList:AddColumn( "Selected Weapons" )
+
+    for _, line in pairs( currentSelectionWeapons ) do
+        weaponList:AddLine( line )
+    end
 
     function weaponList:DoDoubleClick( line )
         weaponList:RemoveLine( line )
@@ -62,6 +70,7 @@ local function openLoadout()
         local weaponClass = ents.FindByClass( weaponEntry:GetValue() )
         if weaponClass[1] ~= nil then
             weaponList:AddLine( weaponEntry:GetValue() )
+            table.insert( currentSelectionWeapons, weaponEntry:GetValue() )
         else
             weaponAddButton:SetText( "Please enter a valid weapon." )
             timer.Simple( 1, function ()
@@ -79,7 +88,6 @@ local function openLoadout()
     button.DoClick = function() window:Close() end
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
-    
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
