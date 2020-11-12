@@ -62,8 +62,8 @@ local function openLoadout()
     weaponAddButton:SetText( "Add weapon" )
 
     weaponAddButton.DoClick = function()
-        local weaponClass = ents.FindByClass( weaponEntry:GetValue() )
-        if weaponClass[1] ~= nil then
+        local foundWeapon = ents.FindByName( weaponEntry:GetValue() )
+        if foundWeapon ~= nil then
             weaponList:AddLine( weaponEntry:GetValue() )
             table.insert( currentSelectionWeapons, weaponEntry:GetValue() )
         else
@@ -76,6 +76,17 @@ local function openLoadout()
         end
     end
 
+    local weaponRemoveButton = vgui.Create( "DButton", panel2 )
+    weaponRemoveButton:SetSize( 200, 20 )
+    weaponRemoveButton:SetPos( ( window:GetWide() - weaponAddButton:GetWide() ) / 2, 55 )
+    weaponRemoveButton:SetText( "Remove selected weapons" )
+    weaponRemoveButton.DoClick = function()
+        for k, line in pairs( weaponList.Lines ) do
+            if line:IsLineSelected() then
+                weaponList:RemoveLine(k)
+            end
+        end
+    end
     -- le funny button
 
     local button = vgui.Create( "DButton", window )
