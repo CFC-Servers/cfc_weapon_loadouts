@@ -4,7 +4,7 @@ local function openLoadout()
     local window = vgui.Create( "DFrame" )
 
     if ScrW() > 640 then
-        window:SetSize( ScrW() * 0.75, ScrH() * 0.75 )
+        window:SetSize( ScrW() * 0.3, ScrH() * 0.3 )
     else
         window:SetSize( 640, 480 )
     end
@@ -19,23 +19,35 @@ local function openLoadout()
 
     local weaponList = vgui.Create ( "DListView" , window )
     weaponList:SetPos( 10, 30 )
-    weaponList:SetSize( 200, window:GetTall() - 40 )
+    weaponList:SetSize( 150, window:GetTall() - 40 )
     weaponList:AddColumn( "Selected Weapons" )
 
     function weaponList:DoDoubleClick( line )
         weaponList:RemoveLine( line )
     end
 
+    local presetList = vgui.Create ( "DListView" , window )
+    presetList:SetPos( window:GetWide() - 160, 30 )
+    presetList:SetSize( 150, window:GetTall() - 40 )
+    presetList:AddColumn( "Saved Presets" )
+
     local weaponEntry = vgui.Create ( "DTextEntry" , window )
-    weaponEntry:SetPos( 215, 30 )
+    weaponEntry:SetPos( window:GetWide() / 2 - 100, 30 )
     weaponEntry:SetSize( 200, 20 )
 
     local weaponAddButton = vgui.Create( "DButton", window )
-    weaponAddButton:SetPos( 215,60 )
+    weaponAddButton:SetPos( window:GetWide() / 2 - 100,60 )
     weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
     weaponAddButton.DoClick = function()
-        weaponList:AddLine( weaponEntry:GetValue() )
+        if weapons.Get( weaponEntry:GetValue() ) ~= nil then
+            weaponList:AddLine( weaponEntry:GetValue() )
+        else
+            weaponAddButton:SetText( "Please enter a valid weapon." )
+            timer.Simple( 1, function ()
+                weaponAddButton:SetText( "Add weapon" )
+            end)
+        end
     end
 
     local button = vgui.Create( "DButton", window )
@@ -57,7 +69,3 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
-
--- ONLY FOR TESTING-
-openLoadout()
-----------------
