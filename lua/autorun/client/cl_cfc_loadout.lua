@@ -14,23 +14,25 @@ local function openLoadout()
     end
 
     window:Center()
-    window:SetTitle( "" )
-    window:SetDraggable( false )
-    window:ShowCloseButton( true )
+    window:SetTitle( "CFC Loadout" )
     window:MakePopup()
 
     window.Paint = function( self, w, h )
-        draw.RoundedBox( 8, 5, 25, w - 10, 50, uiColor )
+        draw.RoundedBox( 8, 0, 0, w, h, uiColor )
     end
     -- Sheet and Panels
 
     local sheet = vgui.Create( "DPropertySheet", window )
+    sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end 
+    sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
     local panel1 = vgui.Create( "DPanel", sheet )
+    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
     sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
 
     local panel2 = vgui.Create( "DPanel", sheet )
+    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
     sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
 
     -- Panel 1 panel1
@@ -60,7 +62,7 @@ local function openLoadout()
     weaponEntry:SetSize( 200, 20 )
 
     local weaponAddButton = vgui.Create( "DButton", panel2 )
-    weaponAddButton:SetPos( (window:GetWide() - weaponAddButton:GetWide()) / 2, window:GetTall() - weaponAddButton:GetTall() - 440 )
+    weaponAddButton:SetPos( (panel2:GetWide() - weaponAddButton:GetWide()) / 2, panel2:GetTall() - weaponAddButton:GetTall() - 440 )
     weaponAddButton:SetSize( 200, 20 )
     weaponAddButton:SetText( "Add weapon" )
 
@@ -79,14 +81,13 @@ local function openLoadout()
         end
     end
 
-    -- Close button
+    -- le funny button
 
-    local closeButton = vgui.Create( "DImageButton", window )
-    closeButton:SetText( "X" )
-    closeButton:SetImage( "icon16/cross.png" )
-    closeButton:SetSize( 16, 16 )
-    closeButton:SetPos( window:GetWide() - closeButton:GetWide() - 13, 45 - closeButton:GetTall() )
-    closeButton.DoClick = function() window:Close() end
+    local button = vgui.Create( "DButton", window )
+    button:SetText( "Close" )
+    button.DoClick = function() window:Close() end
+    button:SetSize( 100, 40 )
+    button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
