@@ -62,8 +62,8 @@ local function openLoadout()
     weaponAddButton:SetText( "Add weapon" )
 
     weaponAddButton.DoClick = function()
-        local foundWeapon = ents.FindByName( weaponEntry:GetValue() )
-        if foundWeapon ~= nil then
+        local weaponsList = list.Get( "Weapon" )
+        if weaponsList ~= nil then
             weaponList:AddLine( weaponEntry:GetValue() )
             table.insert( currentSelectionWeapons, weaponEntry:GetValue() )
         else
@@ -97,8 +97,8 @@ local function openLoadout()
 
     -- Testing stuff, ignore
 
-    print( "Window wide: "..window:GetWide() )
-    print( "Window tall: "..window:GetTall() )
+    print( "Window wide: " .. window:GetWide() )
+    print( "Window tall: " .. window:GetTall() )
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
