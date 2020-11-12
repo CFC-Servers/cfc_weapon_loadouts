@@ -22,13 +22,13 @@ local function openLoadout()
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
-    local panel1 = vgui.Create( "DPanel", sheet )
-    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
-    sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
-
     local panel2 = vgui.Create( "DPanel", sheet )
     panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
-    sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
+    sheet:AddSheet( "panel1", panel2, "icon16/cross.png" )
+
+    local panel1 = vgui.Create( "DPanel", sheet )
+    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end 
+    sheet:AddSheet( "panel2", panel1, "icon16/tick.png" )
 
     -- Panel 1 panel1
 
@@ -48,8 +48,8 @@ local function openLoadout()
     end
 
     local presetList = vgui.Create ( "DListView" , panel2 )
-    presetList:SetPos( ( window:GetWide() - presetList:GetWide() ) * 0.85, ( window:GetTall() - presetList:GetTall() ) * 0.05 )
-    presetList:SetSize( ( window:GetWide() - presetList:GetWide() ) * 0.2, ( window:GetTall() - presetList:GetTall() ) * 0.8 )
+    presetList:SetPos( 450, 5)
+    presetList:SetSize( 150, 500 )
     presetList:AddColumn( "Saved Presets" )
 
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
