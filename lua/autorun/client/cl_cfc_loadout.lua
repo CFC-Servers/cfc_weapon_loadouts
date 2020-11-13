@@ -84,6 +84,17 @@ local function openLoadout()
     presetList:SetSize( 150, 415 )
     presetList:AddColumn( "Saved Presets" )
 
+    function presetFileCheck ()
+        local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
+        presetList:Clear()
+        for _, filename in pairs( files ) do
+            local name = string.Replace( filename, ".json", "" )
+            presetList:AddLine( name )
+        end
+    end
+
+    presetFileCheck()
+
     local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
     presetEntry:SetSize( 200, 20 )
     presetEntry:SetPos( ( window:GetWide() - presetEntry:GetWide() ) / 2, 100 )
@@ -111,6 +122,8 @@ local function openLoadout()
             PrintTable( currentWeaponsList )
             local jsonTable = util.TableToJSON( currentWeaponsList, true )
             file.Write( "cfc_loadout/"..fileName..".json", jsonTable )
+
+            presetFileCheck()
         end
     end
 
