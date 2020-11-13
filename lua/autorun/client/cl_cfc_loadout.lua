@@ -1,10 +1,13 @@
 local uiColor = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
+file.CreateDir("")
 --local allLocalPresets
 
 local function openLoadout()
+
     PrintTable( list.Get( "Weapon" ) )
+
     -- Window init
     local window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
@@ -43,15 +46,6 @@ local function openLoadout()
         weaponList:AddLine( line )
     end
 
-    function weaponList:DoDoubleClick( line )
-        weaponList:RemoveLine( line )
-    end
-
-    local presetList = vgui.Create ( "DListView" , panel2 )
-    presetList:SetPos( 475, 5)
-    presetList:SetSize( 150, 415 )
-    presetList:AddColumn( "Saved Presets" )
-
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
     weaponEntry:SetSize( 200, 20 )
     weaponEntry:SetPos( ( window:GetWide() - weaponEntry:GetWide() ) / 2, 5 )
@@ -87,6 +81,37 @@ local function openLoadout()
             end
         end
     end
+
+    local presetList = vgui.Create ( "DListView" , panel2 )
+    presetList:SetPos( 475, 5)
+    presetList:SetSize( 150, 415 )
+    presetList:AddColumn( "Saved Presets" )
+
+    local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
+    presetEntry:SetSize( 200, 20 )
+    presetEntry:SetPos( ( window:GetWide() - presetEntry:GetWide() ) / 2, 100 )
+
+    local presetAddButton = vgui.Create( "DButton", panel2 )
+    presetAddButton:SetSize( 200, 20 )
+    presetAddButton:SetPos( ( window:GetWide() - presetAddButton:GetWide() ) / 2, 125 )
+    presetAddButton:SetText( "Add preset with current weapons" )
+
+    weaponAddButton.DoClick = function()
+
+    end
+
+    local presetRemoveButton = vgui.Create( "DButton", panel2 )
+    presetRemoveButton:SetSize( 200, 20 )
+    presetRemoveButton:SetPos( ( window:GetWide() - presetRemoveButton:GetWide() ) / 2, 150 )
+    presetRemoveButton:SetText( "Remove selected presets" )
+    presetRemoveButton.DoClick = function()
+        for k, line in pairs( presetList.Lines ) do
+            if line:IsLineSelected() then
+                presetList:RemoveLine(k)
+            end
+        end
+    end
+
     -- le funny button
 
     local button = vgui.Create( "DButton", window )
