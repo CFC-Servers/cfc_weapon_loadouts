@@ -1,13 +1,10 @@
 local uiColor = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
-file.CreateDir("")
+file.CreateDir("cfc_loadout")
 --local allLocalPresets
 
 local function openLoadout()
-
-    PrintTable( list.Get( "Weapon" ) )
-
     -- Window init
     local window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
@@ -96,8 +93,25 @@ local function openLoadout()
     presetAddButton:SetPos( ( window:GetWide() - presetAddButton:GetWide() ) / 2, 125 )
     presetAddButton:SetText( "Add preset with current weapons" )
 
-    weaponAddButton.DoClick = function()
-
+    presetAddButton.DoClick = function()
+        local fileName = string.match( presetEntry:GetValue(), "[a-zA-Z0-9_]*" )
+        if fileName == "" then
+            presetAddButton:SetText( "Please enter a valid name." )
+            timer.Simple( 1, function ()
+                if IsValid( presetAddButton ) then
+                    presetAddButton:SetText( "Add preset with current weapons" )
+                end
+            end)
+        else
+            local currentWeaponsList = {}
+            for _, line in pairs( weaponList:GetLines() ) do
+                table.insert( currentWeaponsList, line:GetValue( 1 ) )
+            end
+            PrintTable( weaponList.Lines )
+            PrintTable( currentWeaponsList )
+            local jsonTable = util.TableToJSON( currentWeaponsList, true )
+            file.Write( "cfc_loadout/"..fileName..".json", jsonTable )
+        end
     end
 
     local presetRemoveButton = vgui.Create( "DButton", panel2 )
