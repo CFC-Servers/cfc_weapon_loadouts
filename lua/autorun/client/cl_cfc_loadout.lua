@@ -118,8 +118,6 @@ local function openLoadout()
             for _, line in pairs( weaponList:GetLines() ) do
                 table.insert( currentWeaponsList, line:GetValue( 1 ) )
             end
-            PrintTable( weaponList.Lines )
-            PrintTable( currentWeaponsList )
             local jsonTable = util.TableToJSON( currentWeaponsList, true )
             file.Write( "cfc_loadout/"..fileName..".json", jsonTable )
 
@@ -134,7 +132,8 @@ local function openLoadout()
     presetRemoveButton.DoClick = function()
         for k, line in pairs( presetList.Lines ) do
             if line:IsLineSelected() then
-                presetList:RemoveLine(k)
+                file.Delete( "cfc_loadout/"..line:GetValue( 1 )..".json" )
+                presetList:RemoveLine( k )
             end
         end
     end
@@ -147,10 +146,6 @@ local function openLoadout()
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
 
-    -- Testing stuff, ignore
-
-    print( "Window wide: " .. window:GetWide() )
-    print( "Window tall: " .. window:GetTall() )
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
