@@ -1,8 +1,8 @@
 local uiColor = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
-file.CreateDir("cfc_loadout")
---local allLocalPresets
+local allWeapons = list.Get( "Weapon" )
+local weaponCategorised = {}
 
 local function openLoadout()
     -- Window init
@@ -22,13 +22,17 @@ local function openLoadout()
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
-    local panel2 = vgui.Create( "DPanel", sheet )
-    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel1", panel2, "icon16/cross.png" )
-
     local panel1 = vgui.Create( "DPanel", sheet )
     panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel2", panel1, "icon16/tick.png" )
+    sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
+
+    local panel2 = vgui.Create( "DPanel", sheet )
+    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+    sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
+
+    local panel3 = vgui.Create( "DPanel", sheet )
+    panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+    sheet:AddSheet( "panel2", panel3, "icon16/tick.png" )
 
     -- Panel 1 panel1
 
@@ -137,6 +141,29 @@ local function openLoadout()
             end
         end
     end
+    -- Panel 3 panel3
+
+    local scrollDock = vgui.Create( "DScrollPanel", panel3 )
+    scrollDock:Dock( FILL )
+
+    for _, weapon in pairs( allWeapons ) do
+
+        if ( !weapon.Spawnable ) then continue end
+
+        weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
+        table.insert( weaponCategorised[ weapon.Category ], weapon )
+
+    end
+
+    allWeapons = _
+
+    for CategoryName, weaponClass in SortedPairs( weaponCategorised ) do
+        local weaponClass = vgui.Create( "ContentIcon", scrollDock )
+    end
+
+    PrintTable( weaponCategorised )
+
+    file.CreateDir("cfc_loadout")
 
     -- le funny button
 
