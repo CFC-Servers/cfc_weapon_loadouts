@@ -119,7 +119,7 @@ local function openLoadout()
                 table.insert( currentWeaponsList, line:GetValue( 1 ) )
             end
             local jsonTable = util.TableToJSON( currentWeaponsList, true )
-            file.Write( "cfc_loadout/"..fileName..".json", jsonTable )
+            file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
 
             presetFileCheck()
         end
@@ -132,7 +132,7 @@ local function openLoadout()
     presetRemoveButton.DoClick = function()
         for k, line in pairs( presetList.Lines ) do
             if line:IsLineSelected() then
-                file.Delete( "cfc_loadout/"..line:GetValue( 1 )..".json" )
+                file.Delete( "cfc_loadout/" .. line:GetValue( 1 ) .. ".json" )
                 presetList:RemoveLine( k )
             end
         end
