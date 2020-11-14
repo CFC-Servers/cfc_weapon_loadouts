@@ -175,8 +175,8 @@ local function openLoadout()
 
             X = X + 120
             if X >= 600 then
-                X = 0
-                Y = Y + 120
+            X = 0
+            Y = Y + 120
             end
         end
     end
@@ -206,7 +206,6 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon:SetName( ent.PrintName or ent.ClassName )
     weaponIcon:SetSpawnName( ent.ClassName )
     weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.Selected = false
     weaponIcon.weaponClass = ent.ClassName
 
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
@@ -215,18 +214,25 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 0) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
 
+    if table.HasValue( currentSelectionWeapons, weaponIcon.weaponClass ) then
+        weaponIcon.Selected = true
+        weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 100 ) )
+    else
+        weaponIcon.Selected = false
+    end
+
     weaponIcon.DoClick = function()
         if weaponIcon.Selected == false then
             weaponIcon.Selected = true
-            weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 100) )
+            weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 100 ) )
             table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
         else
             weaponIcon.Selected = false
-            weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 0) )
+            weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 0 ) )
             for I, value in pairs( currentSelectionWeapons ) do
-                if value ~= weaponIcon.weaponClass then return end
-                table.remove( currentSelectionWeapons, I )
-                break
+                if value == weaponIcon.weaponClass then
+                    table.remove( currentSelectionWeapons, I )
+                end
             end
         end
         populateWeaponList()
