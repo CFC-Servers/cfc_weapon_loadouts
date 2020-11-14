@@ -6,7 +6,7 @@ local weaponCategorised = {}
 
 for _, weapon in pairs( allWeapons ) do
 
-    if ( !weapon.Spawnable ) then continue end
+    if ( not weapon.Spawnable ) then continue end
 
     weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
     table.insert( weaponCategorised[ weapon.Category ], weapon )
@@ -159,17 +159,34 @@ local function openLoadout()
     local scrollDock = vgui.Create( "DScrollPanel", panel3 )
     scrollDock:Dock( FILL )
 
-    local Icons = {}
     local X = 0
     local Y = 0
 
     for CategoryName, v in SortedPairs( weaponCategorised ) do
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
-            Icons ["icon_" .. CategoryName ] = vgui.Create( "ContentIcon", scrollDock )
-            Icons ["icon_" .. CategoryName ]:SetPos( X, Y )
-            Icons ["icon_" .. CategoryName ]:SetName( ent.PrintName or ent.ClassName )
-            Icons ["icon_" .. CategoryName ]:SetSpawnName( ent.ClassName )
-            Icons ["icon_" .. CategoryName ]:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+            local weaponIcon = vgui.Create( "ContentIcon", scrollDock )
+            weaponIcon:SetPos( X, Y )
+            weaponIcon:SetName( ent.PrintName or ent.ClassName )
+            weaponIcon:SetSpawnName( ent.ClassName )
+            weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+            weaponIcon.Clicked = false
+            weaponIcon.weaponClass = ent.ClassName 
+
+            weaponIcon.DoClick = function()
+                if weaponIcon.Clicked == false then
+                    weaponIcon.Clicked = true
+                    table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
+                else
+                    weaponIcon.Clicked = true
+                    print( weaponIcon.Clicked )
+                    for I, value in pairs( currentSelectionWeapons ) do
+                        if value ~= weaponIcon.weaponClass then return end
+                        table.remove( currentSelectionWeapons, I )
+                        break
+                    end
+                end
+                PrintTable( currentSelectionWeapons )
+            end
 
             X = X + 120
             if X >= 600 then
@@ -179,6 +196,7 @@ local function openLoadout()
         end
     end
 
+    --PrintTable( weaponCategorised )
     -- le funny button
 
     local button = vgui.Create( "DButton", window )
