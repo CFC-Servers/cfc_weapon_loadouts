@@ -45,15 +45,15 @@ local function openLoadout()
 
     panel1 = vgui.Create( "DPanel", sheet )
     panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
+    sheet:AddSheet( "Preset selection", panel1, "icon16/star.png" )
 
     panel2 = vgui.Create( "DPanel", sheet )
     panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
+    sheet:AddSheet( "Preset editor", panel2, "icon16/wrench.png" )
 
     panel3 = vgui.Create( "DPanel", sheet )
     panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel3", panel3, "icon16/tick.png" )
+    sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
 
     -- Panel 1 panel1
 
@@ -78,8 +78,7 @@ local function openLoadout()
     weaponAddButton.DoClick = function()
         local weaponsList = list.Get( "Weapon" )
         if weaponsList[weaponEntry:GetValue()] then
-            weaponList:AddLine( weaponEntry:GetValue() )
-            table.insert( currentSelectionWeapons, weaponEntry:GetValue() )
+            addToSelectionWeapon ( weapon )
         else
             weaponAddButton:SetText( "Please enter a valid weapon." )
             timer.Simple( 1, function ()
@@ -95,11 +94,14 @@ local function openLoadout()
     weaponRemoveButton:SetPos( ( window:GetWide() - weaponAddButton:GetWide() ) / 2, 55 )
     weaponRemoveButton:SetText( "Remove selected weapons" )
     weaponRemoveButton.DoClick = function()
-        for k, line in pairs( weaponList.Lines ) do
+        for _, line in pairs( weaponList.Lines ) do
             if line:IsLineSelected() then
-                weaponList:RemoveLine(k)
+                removeToSelectionWeapon( line:GetColumnText( 1 ) )
             end
         end
+        print( "----" )
+        PrintTable( currentSelectionWeapons )
+        populateWeaponList()
     end
 
     local presetList = vgui.Create ( "DListView" , panel2 )
@@ -162,13 +164,25 @@ local function openLoadout()
     end
     -- Panel 3 panel3
 
-    scrollDock = vgui.Create( "DScrollPanel", panel3 )
-    scrollDock:Dock( FILL )
+    --scrollDock = vgui.Create( "DScrollPanel", panel3 )
+    --scrollDock:Dock( FILL )
 
-    local X = 0
-    local Y = 0
+    local weaponCats = vgui.Create( "DPropertySheet", panel3 )
+    weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
+    weaponCats:SetPadding( 0 )
+    weaponCats:Dock( FILL )
 
-    for CategoryName, v in SortedPairs( weaponCategorised ) do
+    for test, v in SortedPairs( weaponCategorised ) do
+        local X = 0
+        local Y = 0
+
+        weaponCatPanel = vgui.Create( "DPanel", weaponCats )
+        weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+        weaponCats:AddSheet( test, weaponCatPanel )
+
+        scrollDock = vgui.Create( "DScrollPanel", weaponCatPanel )
+        scrollDock:Dock( FILL )
+
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
 
             createWeaponIcon ( X, Y, ent )
@@ -211,12 +225,12 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 0) )
+    weaponIcon.selectionShape:SetColor( Color(0, 0, 255, 0) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
 
     if table.HasValue( currentSelectionWeapons, weaponIcon.weaponClass ) then
         weaponIcon.Selected = true
-        weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 100 ) )
+        weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 200 ) )
     else
         weaponIcon.Selected = false
     end
@@ -224,20 +238,31 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.DoClick = function()
         if weaponIcon.Selected == false then
             weaponIcon.Selected = true
-            weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 100 ) )
-            table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
+            weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 200 ) )
+            addToSelectionWeapon( weaponIcon.weaponClass )
         else
             weaponIcon.Selected = false
-            weaponIcon.selectionShape:SetColor( Color( 0, 255, 0, 0 ) )
-            for I, value in pairs( currentSelectionWeapons ) do
-                if value == weaponIcon.weaponClass then
-                    table.remove( currentSelectionWeapons, I )
-                end
-            end
+            weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 0 ) )
+            removeToSelectionWeapon ( weaponIcon.weaponClass )
         end
         populateWeaponList()
     end
 end
+
+function addToSelectionWeapon ( inputWeapon )
+    table.insert( currentSelectionWeapons, inputWeapon )
+    populateWeaponList()
+end
+
+function removeToSelectionWeapon ( inputWeapon )
+    for I, value in pairs( currentSelectionWeapons ) do
+        if value == inputWeapon then
+            table.remove( currentSelectionWeapons, I )
+        end
+    end
+    populateWeaponList()
+end
+
 -- Console / Chat trigger
 
 concommand.Add( "cfc_loadout", openLoadout )
