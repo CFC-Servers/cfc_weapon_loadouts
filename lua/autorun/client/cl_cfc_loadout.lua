@@ -170,7 +170,7 @@ local function openLoadout()
             weaponIcon:SetSpawnName( ent.ClassName )
             weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
             weaponIcon.Clicked = false
-            weaponIcon.weaponClass = ent.ClassName 
+            weaponIcon.weaponClass = ent.ClassName
 
             weaponIcon.DoClick = function()
 
