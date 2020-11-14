@@ -1,4 +1,4 @@
-local uiColor = Color( 36, 41, 67, 255 )
+local UICOLOR = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
 local allWeapons = list.Get( "Weapon" )
@@ -18,6 +18,8 @@ allWeapons = _
 file.CreateDir("cfc_loadout")
 
 local function openLoadout()
+    -- Functions
+
     -- Window init
     local window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
@@ -26,7 +28,7 @@ local function openLoadout()
     window:MakePopup()
 
     window.Paint = function( self, w, h )
-        draw.RoundedBox( 8, 0, 0, w, h, uiColor )
+        draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
     end
     -- Sheet and Panels
 
@@ -173,20 +175,20 @@ local function openLoadout()
             weaponIcon.weaponClass = ent.ClassName 
 
             weaponIcon.DoClick = function()
-                if weaponIcon.Clicked == false then
-                    weaponIcon.Clicked = true
-                    table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
-                else
-                    weaponIcon.Clicked = true
-                    print( weaponIcon.Clicked )
-                    for I, value in pairs( currentSelectionWeapons ) do
-                        if value ~= weaponIcon.weaponClass then return end
-                        table.remove( currentSelectionWeapons, I )
-                        break
-                    end
+
+            if weaponIcon.Clicked == false then
+                weaponIcon.Clicked = true
+                table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
+            else
+                weaponIcon.Clicked = true
+                print( weaponIcon.Clicked )
+                for I, value in pairs( currentSelectionWeapons ) do
+                    if value ~= weaponIcon.weaponClass then return end
+                    table.remove( currentSelectionWeapons, I )
+                    break
                 end
-                PrintTable( currentSelectionWeapons )
             end
+        end
 
             X = X + 120
             if X >= 600 then
