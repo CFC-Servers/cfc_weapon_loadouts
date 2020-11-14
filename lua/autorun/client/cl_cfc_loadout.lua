@@ -209,24 +209,25 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.Selected = false
     weaponIcon.weaponClass = ent.ClassName
 
-    weaponIcon.selectionShape = vgui.Create( "DShape", panel3 )
+    weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetParent( weaponIcon )
-    weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 100) )
-    weaponIcon.selectionShape:SetSize( 12, 120 )
+    weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 0) )
+    weaponIcon.selectionShape:SetSize( 120, 120 )
 
     weaponIcon.DoClick = function()
         if weaponIcon.Selected == false then
             weaponIcon.Selected = true
+            weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 100) )
             table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
         else
+            weaponIcon.Selected = false
+            weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 0) )
             for I, value in pairs( currentSelectionWeapons ) do
                 if value ~= weaponIcon.weaponClass then return end
                 table.remove( currentSelectionWeapons, I )
                 break
             end
-            weaponIcon.Selected = false
         end
         populateWeaponList()
     end
