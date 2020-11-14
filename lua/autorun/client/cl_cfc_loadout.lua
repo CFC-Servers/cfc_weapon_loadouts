@@ -7,6 +7,9 @@ local weaponCategorised = {}
 local window
 local weaponList
 local scrollDock
+local panel1
+local panel2
+local panel3
 
 for _, weapon in pairs( allWeapons ) do
     if weapon.Spawnable then
@@ -40,17 +43,17 @@ local function openLoadout()
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
-    local panel1 = vgui.Create( "DPanel", sheet )
+    panel1 = vgui.Create( "DPanel", sheet )
     panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "panel1", panel1, "icon16/cross.png" )
 
-    local panel2 = vgui.Create( "DPanel", sheet )
+    panel2 = vgui.Create( "DPanel", sheet )
     panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "panel2", panel2, "icon16/tick.png" )
 
-    local panel3 = vgui.Create( "DPanel", sheet )
+    panel3 = vgui.Create( "DPanel", sheet )
     panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "panel2", panel3, "icon16/tick.png" )
+    sheet:AddSheet( "panel3", panel3, "icon16/tick.png" )
 
     -- Panel 1 panel1
 
@@ -206,12 +209,11 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.Selected = false
     weaponIcon.weaponClass = ent.ClassName
 
-    weaponIcon.Shape = vgui.Create( "DShape", Frame )
-    weaponIcon.Shape:SetType( "Rect" ) -- This is the only type it can be
-    weaponIcon.Shape:SetPos( 5, 5 )
-    weaponIcon.Shape:SetParent( weaponIcon )
-    weaponIcon.Shape:SetColor( Color(0, 255, 0, 100) )
-    weaponIcon.Shape:SetSize( 120, 120 )
+    weaponIcon.selectionShape = vgui.Create( "DShape", panel3 )
+    weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
+    weaponIcon.selectionShape:SetPos( 60, 5 )
+    weaponIcon.selectionShape:SetColor( Color(0, 255, 0, 5) )
+    weaponIcon.selectionShape:SetSize( 12, 12 )
 
     weaponIcon.DoClick = function()
         if weaponIcon.Selected == false then
