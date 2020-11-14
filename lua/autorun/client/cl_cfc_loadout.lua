@@ -167,6 +167,7 @@ local function openLoadout()
 
     for CategoryName, v in SortedPairs( weaponCategorised ) do
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
+
             createWeaponIcon ( X, Y, ent )
 
             X = X + 120
@@ -227,7 +228,7 @@ function createWeaponIcon ( X, Y, ent )
         populateWeaponList()
     end
 end
--- Command / Chat trigger
+-- Console / Chat trigger
 
 concommand.Add( "cfc_loadout", openLoadout )
 
