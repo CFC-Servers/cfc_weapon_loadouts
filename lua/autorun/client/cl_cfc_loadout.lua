@@ -5,12 +5,10 @@ local allWeapons = list.Get( "Weapon" )
 local weaponCategorised = {}
 
 for _, weapon in pairs( allWeapons ) do
-
-    if not weapon.Spawnable then continue end
-
-    weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
-    table.insert( weaponCategorised[ weapon.Category ], weapon )
-
+    if weapon.Spawnable then
+        weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
+        table.insert( weaponCategorised[ weapon.Category ], weapon )
+    end
 end
 
 allWeapons = _
