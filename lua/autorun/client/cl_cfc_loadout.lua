@@ -4,6 +4,19 @@ local currentSelectionWeapons = {}
 local allWeapons = list.Get( "Weapon" )
 local weaponCategorised = {}
 
+for _, weapon in pairs( allWeapons ) do
+
+    if ( !weapon.Spawnable ) then continue end
+
+    weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
+    table.insert( weaponCategorised[ weapon.Category ], weapon )
+
+end
+
+allWeapons = _
+
+file.CreateDir("cfc_loadout")
+
 local function openLoadout()
     -- Window init
     local window = vgui.Create( "DFrame" )
@@ -146,24 +159,25 @@ local function openLoadout()
     local scrollDock = vgui.Create( "DScrollPanel", panel3 )
     scrollDock:Dock( FILL )
 
-    for _, weapon in pairs( allWeapons ) do
+    local Icons = {}
+    local X = 0
+    local Y = 0
 
-        if ( !weapon.Spawnable ) then continue end
+    for CategoryName, v in SortedPairs( weaponCategorised ) do
+        for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
+            Icons ["icon_" .. CategoryName ] = vgui.Create( "ContentIcon", scrollDock )
+            Icons ["icon_" .. CategoryName ]:SetPos( X, Y )
+            Icons ["icon_" .. CategoryName ]:SetName( ent.PrintName or ent.ClassName )
+            Icons ["icon_" .. CategoryName ]:SetSpawnName( ent.ClassName )
+            Icons ["icon_" .. CategoryName ]:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
 
-        weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
-        table.insert( weaponCategorised[ weapon.Category ], weapon )
-
+            X = X + 120
+            if X >= 600 then
+                X = 0
+                Y = Y + 120
+            end
+        end
     end
-
-    allWeapons = _
-
-    for CategoryName, weaponClass in SortedPairs( weaponCategorised ) do
-        local weaponClass = vgui.Create( "ContentIcon", scrollDock )
-    end
-
-    PrintTable( weaponCategorised )
-
-    file.CreateDir("cfc_loadout")
 
     -- le funny button
 
@@ -172,7 +186,6 @@ local function openLoadout()
     button.DoClick = function() window:Close() end
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
-
 end
 
 concommand.Add( "cfc_loadout", openLoadout )
