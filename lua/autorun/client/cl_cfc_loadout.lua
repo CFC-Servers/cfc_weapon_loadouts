@@ -4,6 +4,7 @@ local currentSelectionWeapons = {}
 local allWeapons = list.Get( "Weapon" )
 local weaponCategorised = {}
 
+local window
 local weaponList
 local scrollDock
 
@@ -19,8 +20,11 @@ allWeapons = _
 file.CreateDir("cfc_loadout")
 
 local function openLoadout()
+
+    if window then window:Remove() end
+
     -- Window init
-    local window = vgui.Create( "DFrame" )
+    window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
     window:Center()
     window:SetTitle( "CFC Loadout" )
@@ -198,15 +202,22 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon:SetName( ent.PrintName or ent.ClassName )
     weaponIcon:SetSpawnName( ent.ClassName )
     weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.Clicked = false
+    weaponIcon.Selected = false
     weaponIcon.weaponClass = ent.ClassName
 
+    weaponIcon.Shape = vgui.Create( "DShape", Frame )
+    weaponIcon.Shape:SetType( "Rect" ) -- This is the only type it can be
+    weaponIcon.Shape:SetPos( 5, 5 )
+    weaponIcon.Shape:SetParent( weaponIcon )
+    weaponIcon.Shape:SetColor( Color(0, 255, 0, 100) )
+    weaponIcon.Shape:SetSize( 120, 120 )
+
     weaponIcon.DoClick = function()
-        if weaponIcon.Clicked == false then
-            weaponIcon.Clicked = true
+        if weaponIcon.Selected == false then
+            weaponIcon.Selected = true
             table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
         else
-            weaponIcon.Clicked = true
+            weaponIcon.Selected = true
             for I, value in pairs( currentSelectionWeapons ) do
                 if value ~= weaponIcon.weaponClass then return end
                 table.remove( currentSelectionWeapons, I )
