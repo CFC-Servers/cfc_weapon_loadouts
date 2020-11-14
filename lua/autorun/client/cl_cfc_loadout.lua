@@ -4,6 +4,9 @@ local currentSelectionWeapons = {}
 local allWeapons = list.Get( "Weapon" )
 local weaponCategorised = {}
 
+local weaponList
+local scrollDock
+
 for _, weapon in pairs( allWeapons ) do
     if weapon.Spawnable then
         weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
@@ -16,8 +19,6 @@ allWeapons = _
 file.CreateDir("cfc_loadout")
 
 local function openLoadout()
-    -- Functions
-
     -- Window init
     local window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
@@ -51,14 +52,12 @@ local function openLoadout()
 
     -- Panel 2 panel2
 
-    local weaponList = vgui.Create ( "DListView" , panel2 )
+    weaponList = vgui.Create ( "DListView" , panel2 )
     weaponList:SetPos( 5, 5)
     weaponList:SetSize( 150, 415 )
     weaponList:AddColumn( "Selected Weapons" )
 
-    for _, line in pairs( currentSelectionWeapons ) do
-        weaponList:AddLine( line )
-    end
+    populateWeaponList()
 
     local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
     weaponEntry:SetSize( 200, 20 )
@@ -156,7 +155,7 @@ local function openLoadout()
     end
     -- Panel 3 panel3
 
-    local scrollDock = vgui.Create( "DScrollPanel", panel3 )
+    scrollDock = vgui.Create( "DScrollPanel", panel3 )
     scrollDock:Dock( FILL )
 
     local X = 0
@@ -164,29 +163,7 @@ local function openLoadout()
 
     for CategoryName, v in SortedPairs( weaponCategorised ) do
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
-            local weaponIcon = vgui.Create( "ContentIcon", scrollDock )
-            weaponIcon:SetPos( X, Y )
-            weaponIcon:SetName( ent.PrintName or ent.ClassName )
-            weaponIcon:SetSpawnName( ent.ClassName )
-            weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-            weaponIcon.Clicked = false
-            weaponIcon.weaponClass = ent.ClassName
-
-            weaponIcon.DoClick = function()
-
-            if weaponIcon.Clicked == false then
-                weaponIcon.Clicked = true
-                table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
-            else
-                weaponIcon.Clicked = true
-                print( weaponIcon.Clicked )
-                for I, value in pairs( currentSelectionWeapons ) do
-                    if value ~= weaponIcon.weaponClass then return end
-                    table.remove( currentSelectionWeapons, I )
-                    break
-                end
-            end
-        end
+            createWeaponIcon ( X, Y, ent )
 
             X = X + 120
             if X >= 600 then
@@ -205,6 +182,41 @@ local function openLoadout()
     button:SetSize( 100, 40 )
     button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
 end
+
+-- Functions
+
+function populateWeaponList()
+    weaponList:Clear()
+    for _, line in pairs( currentSelectionWeapons ) do
+        weaponList:AddLine( line )
+    end
+end
+
+function createWeaponIcon ( X, Y, ent )
+    local weaponIcon = vgui.Create( "ContentIcon", scrollDock )
+    weaponIcon:SetPos( X, Y )
+    weaponIcon:SetName( ent.PrintName or ent.ClassName )
+    weaponIcon:SetSpawnName( ent.ClassName )
+    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+    weaponIcon.Clicked = false
+    weaponIcon.weaponClass = ent.ClassName
+
+    weaponIcon.DoClick = function()
+        if weaponIcon.Clicked == false then
+            weaponIcon.Clicked = true
+            table.insert( currentSelectionWeapons, weaponIcon.weaponClass )
+        else
+            weaponIcon.Clicked = true
+            for I, value in pairs( currentSelectionWeapons ) do
+                if value ~= weaponIcon.weaponClass then return end
+                table.remove( currentSelectionWeapons, I )
+                break
+            end
+        end
+        populateWeaponList()
+    end
+end
+-- Command / Chat trigger
 
 concommand.Add( "cfc_loadout", openLoadout )
 
