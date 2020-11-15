@@ -155,9 +155,6 @@ local function openLoadout()
     end
     -- Panel 3 panel3
 
-    --scrollDock = vgui.Create( "DScrollPanel", panel3 )
-    --scrollDock:Dock( FILL )
-
     local weaponCats = vgui.Create( "DPropertySheet", panel3 )
     weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
     weaponCats:SetPadding( 0 )
