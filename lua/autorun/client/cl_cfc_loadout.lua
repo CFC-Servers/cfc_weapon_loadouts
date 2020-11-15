@@ -225,12 +225,12 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color(0, 0, 255, 0) )
+    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 0 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
 
     if table.HasValue( currentSelectionWeapons, weaponIcon.weaponClass ) then
         weaponIcon.Selected = true
-        weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 200 ) )
+        weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 200 ) )
     else
         weaponIcon.Selected = false
     end
@@ -238,11 +238,11 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.DoClick = function()
         if weaponIcon.Selected == false then
             weaponIcon.Selected = true
-            weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 200 ) )
+            weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 200 ) )
             addToSelectionWeapon( weaponIcon.weaponClass )
         else
             weaponIcon.Selected = false
-            weaponIcon.selectionShape:SetColor( Color( 0, 0, 255, 0 ) )
+            weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 0 ) )
             removeToSelectionWeapon ( weaponIcon.weaponClass )
         end
         populateWeaponList()
