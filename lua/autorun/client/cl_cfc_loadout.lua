@@ -38,7 +38,10 @@ local function openLoadout()
     window.Paint = function( self, w, h )
         draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
     end
-    -- Sheet and Panels
+
+    -----------------------
+    -- Sheet and Panels ---
+    -----------------------
 
     local sheet = vgui.Create( "DPropertySheet", window )
     sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
@@ -57,7 +60,9 @@ local function openLoadout()
     panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
 
-    -- Panel 1 panel1
+    -----------------------
+    -- Panel 1 panel1   ---
+    -----------------------
 
     presetPreviewList = vgui.Create ( "DListView" , panel1 )
     presetPreviewList:SetPos( 170, 20 )
@@ -70,7 +75,9 @@ local function openLoadout()
     presetSelectButton:SetPos( ( window:GetWide() - presetSelectButton:GetWide() ) / 2, 325 )
     presetSelectButton:SetText( "Select preset" )
 
-    -- Panel 2 panel2
+    -----------------------
+    -- Panel 2 panel2   ---
+    -----------------------
 
     weaponList = vgui.Create ( "DListView" , panel2 )
     weaponList:SetPos( 5, 5)
@@ -165,7 +172,10 @@ local function openLoadout()
             end
         end
     end
-    -- Panel 3 panel3
+
+    -----------------------
+    -- Panel 3 panel3   ---
+    -----------------------
 
     local weaponCats = vgui.Create( "DPropertySheet", panel3 )
     weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
