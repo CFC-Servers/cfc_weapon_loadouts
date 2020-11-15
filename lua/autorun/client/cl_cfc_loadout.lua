@@ -194,15 +194,6 @@ local function openLoadout()
             end
         end
     end
-
-    --PrintTable( weaponCategorised )
-    -- le funny button
-
-    local button = vgui.Create( "DButton", window )
-    button:SetText( "Close" )
-    button.DoClick = function() window:Close() end
-    button:SetSize( 100, 40 )
-    button:SetPos( (window:GetWide() - button:GetWide()) / 2, window:GetTall() - button:GetTall() - 10 )
 end
 
 -- Functions
