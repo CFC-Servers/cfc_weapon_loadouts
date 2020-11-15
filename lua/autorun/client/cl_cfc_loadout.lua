@@ -119,19 +119,25 @@ local function openLoadout()
                 removeToSelectionWeapon( line:GetColumnText( 1 ) )
             end
         end
-        print( "----" )
-        PrintTable( currentSelectionWeapons )
         populateWeaponList()
     end
 
     presetListEditor = vgui.Create ( "DListView" , panel2 )
     presetListEditor:SetPos( 475, 5)
     presetListEditor:SetSize( 150, 415 )
+    presetListEditor:SetMultiSelect( false )
     presetListEditor:AddColumn( "Saved Presets" )
 
     presetFileCheck( presetPreviewList )
     presetFileCheck( presetListEditor )
 
+    function presetListEditor:DoDoubleClick( _, line )
+        local fileName = line:GetValue( 1 )
+        print( fileName )
+        --local returnedTable = getPresetJsonTable( "test2" )
+        printTable( getPresetJsonTable( "test2" ) )
+    end
+    
     local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
     presetEntry:SetSize( 200, 20 )
     presetEntry:SetPos( ( window:GetWide() - presetEntry:GetWide() ) / 2, 100 )
@@ -157,8 +163,9 @@ local function openLoadout()
                     presetAddButton:SetText( "Add preset with current weapons" )
                 end
             end)
+        else
+            presetFileCreate( fileName )
         end
-        presetFileCreate( fileName )
     end
 
     local presetRemoveButton = vgui.Create( "DButton", panel2 )
@@ -285,6 +292,11 @@ function presetFileDelete( presetName )
     file.Delete( "cfc_loadout/" .. presetName .. ".json" )
     presetFileCheck( presetPreviewList )
     presetFileCheck( presetListEditor )
+end
+
+function getPresetJsonTable( presetFileName )
+    local fileContent = file.Read( presetFileName .. ".json", "DATA/cfc_loadout" )
+    return util.JSONToTable( fileContent ) 
 end
 
 -- Console / Chat trigger
