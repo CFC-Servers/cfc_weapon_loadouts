@@ -10,6 +10,7 @@ local scrollDock
 local panel1
 local panel2
 local panel3
+local presetPreviewList
 local presetList
 
 for _, weapon in pairs( allWeapons ) do
@@ -57,6 +58,17 @@ local function openLoadout()
     sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
 
     -- Panel 1 panel1
+
+    presetPreviewList = vgui.Create ( "DListView" , panel1 )
+    presetPreviewList:SetPos( 170, 20 )
+    presetPreviewList:SetSize( 300, 300 )
+    presetPreviewList:SetMultiSelect( false )
+    presetPreviewList:AddColumn( "Local presets" )
+
+    local presetSelectButton = vgui.Create( "DButton", panel1 )
+    presetSelectButton:SetSize( 300, 30 )
+    presetSelectButton:SetPos( ( window:GetWide() - presetSelectButton:GetWide() ) / 2, 325 )
+    presetSelectButton:SetText( "Select preset" )
 
     -- Panel 2 panel2
 
