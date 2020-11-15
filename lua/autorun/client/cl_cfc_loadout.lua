@@ -10,6 +10,7 @@ local scrollDock
 local panel1
 local panel2
 local panel3
+local presetList
 
 for _, weapon in pairs( allWeapons ) do
     if weapon.Spawnable then
@@ -104,19 +105,10 @@ local function openLoadout()
         populateWeaponList()
     end
 
-    local presetList = vgui.Create ( "DListView" , panel2 )
+    presetList = vgui.Create ( "DListView" , panel2 )
     presetList:SetPos( 475, 5)
     presetList:SetSize( 150, 415 )
     presetList:AddColumn( "Saved Presets" )
-
-    function presetFileCheck ()
-        local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-        presetList:Clear()
-        for _, filename in pairs( files ) do
-            local name = string.Replace( filename, ".json", "" )
-            presetList:AddLine( name )
-        end
-    end
 
     presetFileCheck()
 
@@ -138,16 +130,15 @@ local function openLoadout()
                     presetAddButton:SetText( "Add preset with current weapons" )
                 end
             end)
-        else
-            local currentWeaponsList = {}
-            for _, line in pairs( weaponList:GetLines() ) do
-                table.insert( currentWeaponsList, line:GetValue( 1 ) )
-            end
-            local jsonTable = util.TableToJSON( currentWeaponsList, true )
-            file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
-
-            presetFileCheck()
+        elseif currentSelectionWeapons[1] == nil then
+            presetAddButton:SetText( "Please add weapons to the preset." )
+            timer.Simple( 1, function ()
+                if IsValid( presetAddButton ) then
+                    presetAddButton:SetText( "Add preset with current weapons" )
+                end
+            end)
         end
+        presetFileCreate( fileName )
     end
 
     local presetRemoveButton = vgui.Create( "DButton", panel2 )
@@ -261,6 +252,22 @@ function removeToSelectionWeapon ( inputWeapon )
         end
     end
     populateWeaponList()
+end
+
+function presetFileCheck ()
+    local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
+    presetList:Clear()
+    for _, filename in pairs( files ) do
+        local name = string.Replace( filename, ".json", "" )
+        presetList:AddLine( name )
+    end
+end
+
+function presetFileCreate ( fileName)
+    local jsonTable = util.TableToJSON( currentSelectionWeapons, true )
+    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
+
+    presetFileCheck()
 end
 
 -- Console / Chat trigger
