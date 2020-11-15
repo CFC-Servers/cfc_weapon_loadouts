@@ -161,8 +161,7 @@ local function openLoadout()
     presetRemoveButton.DoClick = function()
         for k, line in pairs( presetListEditor.Lines ) do
             if line:IsLineSelected() then
-                file.Delete( "cfc_loadout/" .. line:GetValue( 1 ) .. ".json" )
-                presetListEditor:RemoveLine( k )
+                presetFileDelete( line:GetValue( 1 ) )
             end
         end
     end
@@ -281,8 +280,10 @@ function presetFileCreate( fileName)
     presetFileCheck( presetListEditor )
 end
 
-function presetFileDelete()
-    
+function presetFileDelete( presetName )
+    file.Delete( "cfc_loadout/" .. presetName .. ".json" )
+    presetFileCheck( presetPreviewList )
+    presetFileCheck( presetListEditor )
 end
 
 -- Console / Chat trigger
