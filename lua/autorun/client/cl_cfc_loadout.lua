@@ -135,7 +135,7 @@ local function openLoadout()
         local fileName = line:GetValue( 1 )
         print( fileName )
         --local returnedTable = getPresetJsonTable( "test2" )
-        printTable( getPresetJsonTable( "test2" ) )
+        PrintTable( getPresetJsonTable( "test2" ) )
     end
     
     local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
@@ -295,7 +295,7 @@ function presetFileDelete( presetName )
 end
 
 function getPresetJsonTable( presetFileName )
-    local fileContent = file.Read( presetFileName .. ".json", "DATA/cfc_loadout" )
+    local fileContent = file.Read( "cfc_loadout/" .. presetFileName .. ".json", "DATA" )
     return util.JSONToTable( fileContent ) 
 end
 
