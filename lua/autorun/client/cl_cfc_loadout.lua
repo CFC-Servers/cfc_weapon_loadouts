@@ -137,7 +137,7 @@ local function openLoadout()
         --local returnedTable = getPresetJsonTable( "test2" )
         PrintTable( getPresetJsonTable( "test2" ) )
     end
-    
+
     local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
     presetEntry:SetSize( 200, 20 )
     presetEntry:SetPos( ( window:GetWide() - presetEntry:GetWide() ) / 2, 100 )
@@ -296,7 +296,7 @@ end
 
 function getPresetJsonTable( presetFileName )
     local fileContent = file.Read( "cfc_loadout/" .. presetFileName .. ".json", "DATA" )
-    return util.JSONToTable( fileContent ) 
+    return util.JSONToTable( fileContent )
 end
 
 -- Console / Chat trigger
