@@ -133,9 +133,8 @@ local function openLoadout()
 
     function presetListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
-        print( fileName )
-        --local returnedTable = getPresetJsonTable( "test2" )
-        PrintTable( getPresetJsonTable( "test2" ) )
+        weaponList = getPresetJsonTable( fileName )
+        populateWeaponList()
     end
 
     local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
@@ -184,21 +183,24 @@ local function openLoadout()
     -- Panel 3 panel3   ---
     -----------------------
 
-    local weaponCats = vgui.Create( "DPropertySheet", panel3 )
+    scrollDock = vgui.Create( "DScrollPanel", panel3 )
+    scrollDock:Dock( FILL )
+
+    local weaponCats = vgui.Create( "DListLayout", scrollDock )
     weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
-    weaponCats:SetPadding( 0 )
-    weaponCats:Dock( FILL )
+    --weaponCats:SetPadding( 0 )
+    --weaponCats:Dock( FILL )
+    weaponCats:SetSize( 630, 100 )
 
-    for test, v in SortedPairs( weaponCategorised ) do
+    for catName, v in SortedPairs( weaponCategorised ) do
         local X = 0
-        local Y = 0
+        local Y = 20
 
-        weaponCatPanel = vgui.Create( "DPanel", weaponCats )
+        weaponCatPanel = vgui.Create( "DCollapsibleCategory", weaponCats )
+        weaponCatPanel:SetLabel( catName )
+        weaponCatPanel:SetExpanded( false )
         weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-        weaponCats:AddSheet( test, weaponCatPanel )
-
-        scrollDock = vgui.Create( "DScrollPanel", weaponCatPanel )
-        scrollDock:Dock( FILL )
+        --weaponCats:AddSheet( catName, weaponCatPanel )
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
 
@@ -223,7 +225,7 @@ function populateWeaponList()
 end
 
 function createWeaponIcon ( X, Y, ent )
-    local weaponIcon = vgui.Create( "ContentIcon", scrollDock )
+    local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
     weaponIcon:SetPos( X, Y )
     weaponIcon:SetName( ent.PrintName or ent.ClassName )
     weaponIcon:SetSpawnName( ent.ClassName )
