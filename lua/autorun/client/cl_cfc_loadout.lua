@@ -1,4 +1,4 @@
-local UICOLOR = Color( 36, 41, 67, 255 )
+--local UICOLOR = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
 local allWeapons = list.Get( "Weapon" )
@@ -35,29 +35,29 @@ local function openLoadout()
     window:SetTitle( "CFC Loadout" )
     window:MakePopup()
 
-    window.Paint = function( self, w, h )
-        draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
-    end
+    -- window.Paint = function( self, w, h )
+    --     draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
+    -- end
 
     -----------------------
     -- Sheet and Panels ---
     -----------------------
 
     local sheet = vgui.Create( "DPropertySheet", window )
-    sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
+    --sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
     panel1 = vgui.Create( "DPanel", sheet )
-    panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+    --panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Preset selection", panel1, "icon16/star.png" )
 
     panel2 = vgui.Create( "DPanel", sheet )
-    panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+    --panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Preset editor", panel2, "icon16/wrench.png" )
 
     panel3 = vgui.Create( "DPanel", sheet )
-    panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+    --panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
 
     -----------------------
@@ -133,7 +133,7 @@ local function openLoadout()
 
     function presetListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
-        weaponList = getPresetJsonTable( fileName )
+        currentSelectionWeapons = getPresetJsonTable( fileName )
         populateWeaponList()
     end
 
@@ -187,7 +187,7 @@ local function openLoadout()
     scrollDock:Dock( FILL )
 
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
-    weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
+    --weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
     --weaponCats:SetPadding( 0 )
     --weaponCats:Dock( FILL )
     weaponCats:SetSize( 630, 100 )
@@ -199,7 +199,7 @@ local function openLoadout()
         weaponCatPanel = vgui.Create( "DCollapsibleCategory", weaponCats )
         weaponCatPanel:SetLabel( catName )
         weaponCatPanel:SetExpanded( false )
-        weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+        --weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
         --weaponCats:AddSheet( catName, weaponCatPanel )
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
