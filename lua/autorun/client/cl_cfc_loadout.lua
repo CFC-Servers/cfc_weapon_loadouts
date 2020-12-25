@@ -78,7 +78,7 @@ local function openLoadout()
         local _, line = presetPreviewList:GetSelectedLine()
         local fileName = line:GetValue( 1 )
         currentSelectionWeapons = getPresetJsonTable( fileName )
-        
+
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( currentSelectionWeapons )
         net.SendToServer()
