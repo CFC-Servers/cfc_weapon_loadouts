@@ -74,6 +74,24 @@ local function openLoadout()
     presetSelectButton:SetSize( 300, 30 )
     presetSelectButton:SetPos( ( window:GetWide() - presetSelectButton:GetWide() ) / 2, 325 )
     presetSelectButton:SetText( "Select preset" )
+    presetSelectButton.DoClick = function()
+        local number, line = presetPreviewList:GetSelectedLine()
+        local fileName = line:GetValue( number )
+        currentSelectionWeapons = getPresetJsonTable( fileName )
+        
+        net.Start( "CFC_Loadout_WeaponTable" )
+        net.WriteTable( currentSelectionWeapons )
+        net.SendToServer()
+    end
+
+    local resetSelectButton = vgui.Create( "DButton", panel1 )
+    resetSelectButton:SetSize( 300, 30 )
+    resetSelectButton:SetPos( ( window:GetWide() - resetSelectButton:GetWide() ) / 2, 360 )
+    resetSelectButton:SetText( "Select default loadout" )
+    resetSelectButton.DoClick = function()
+        net.Start( "CFC_Loadout_Resetweapons" )
+        net.SendToServer()
+    end
 
     -----------------------
     -- Panel 2 panel2   ---
