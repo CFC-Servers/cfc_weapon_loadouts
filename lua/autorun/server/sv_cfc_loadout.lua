@@ -34,5 +34,5 @@ net.Receive( "CFC_Loadout_InitialSpawn", function( _, ply )
 
     net.Start( "CFC_Loadout_SendRestrictions" )
     net.WriteTable( restrictedTable )
-	net.Send( ply )
+    net.Send( ply )
 end )
