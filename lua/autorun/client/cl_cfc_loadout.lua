@@ -16,12 +16,12 @@ local presetListEditor
 file.CreateDir("cfc_loadout")
 
 --hook.Add( "InitPostEntity", "Ready", function()
-	net.Start( "CFC_Loadout_InitialSpawn" )
-	net.SendToServer()
+    net.Start( "CFC_Loadout_InitialSpawn" )
+    net.SendToServer()
 --end )
 
 net.Receive( "CFC_Loadout_SendRestrictions", function()
-	local group = LocalPlayer():GetUserGroup()
+    local group = LocalPlayer():GetUserGroup()
     local weaponTable = net.ReadTable()
 
     for _, weapon in pairs( allWeapons ) do
@@ -32,7 +32,7 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
         if istable( weaponPerms ) then
             print( group )
             PrintTable( weaponPerms )
-            
+
             isRestricted = table.HasValue( weaponPerms, group )
         end
 
