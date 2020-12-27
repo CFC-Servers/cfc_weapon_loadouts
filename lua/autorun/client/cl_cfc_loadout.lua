@@ -13,16 +13,36 @@ local panel3
 local presetPreviewList
 local presetListEditor
 
-for _, weapon in pairs( allWeapons ) do
-    if weapon.Spawnable then
-        weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
-        table.insert( weaponCategorised[ weapon.Category ], weapon )
-    end
-end
-
-allWeapons = _
-
 file.CreateDir("cfc_loadout")
+
+--hook.Add( "InitPostEntity", "Ready", function()
+	net.Start( "CFC_Loadout_InitialSpawn" )
+	net.SendToServer()
+--end )
+
+net.Receive( "CFC_Loadout_SendRestrictions", function()
+	local group = LocalPlayer():GetUserGroup()
+    local weaponTable = net.ReadTable()
+
+    for _, weapon in pairs( allWeapons ) do
+        local weaponClass =  weapon.ClassName
+        local weaponPerms = weaponTable[ weaponClass ]
+        local isRestricted
+
+        if istable( weaponPerms ) then
+            print( group )
+            PrintTable( weaponPerms )
+            
+            isRestricted = table.HasValue( weaponPerms, group )
+        end
+
+        if weapon.Spawnable and isRestricted ~= true then
+            weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
+            table.insert( weaponCategorised[ weapon.Category ], weapon )
+        end
+    end
+    allWeapons = _
+end )
 
 local function openLoadout()
 
