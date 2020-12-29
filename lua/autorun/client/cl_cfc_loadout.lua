@@ -1,7 +1,6 @@
 --local UICOLOR = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
-local allWeapons = list.Get( "Weapon" )
 local weaponCategorised = {}
 
 local window
@@ -21,6 +20,7 @@ hook.Add( "InitPostEntity", "Ready", function()
 end )
 
 net.Receive( "CFC_Loadout_SendRestrictions", function()
+    local allWeapons = list.Get( "Weapon" )
     local group = LocalPlayer():GetUserGroup()
     local weaponTable = net.ReadTable()
 
@@ -30,9 +30,6 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
         local isRestricted
 
         if istable( weaponPerms ) then
-            print( group )
-            PrintTable( weaponPerms )
-
             isRestricted = table.HasValue( weaponPerms, group )
         end
 
