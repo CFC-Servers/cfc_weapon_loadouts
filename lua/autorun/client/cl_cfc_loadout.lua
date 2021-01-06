@@ -1,4 +1,4 @@
---local UICOLOR = Color( 36, 41, 67, 255 )
+local UICOLOR = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
 local weaponCategorised = {}
@@ -52,9 +52,9 @@ local function openLoadout()
     window:SetTitle( "CFC Loadout" )
     window:MakePopup()
 
-    -- window.Paint = function( self, w, h )
-    --     draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
-    -- end
+    window.Paint = function( self, w, h )
+        draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
+    end
 
     -----------------------
     -- Sheet and Panels ---
