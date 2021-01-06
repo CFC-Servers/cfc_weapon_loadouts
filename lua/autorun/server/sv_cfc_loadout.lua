@@ -10,7 +10,7 @@ local function giveWeapons( ply )
         local canSpawn = URS.Check( ply, "swep", weapon )
         if canSpawn ~= false then
             ply:Give( weapon )
-            local weaponEnt = ply:GetWeapon( weapon )
+            --local weaponEnt = ply:GetWeapon( weapon )
             --local ammoType = weaponEnt:GetPrimaryAmmoType()
             --ply:SetAmmo( 1000, ammoType )
         end
