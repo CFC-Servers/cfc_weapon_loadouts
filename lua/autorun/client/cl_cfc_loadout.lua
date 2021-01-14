@@ -5,7 +5,6 @@ local weaponCategorised = {}
 local allWeapons = {}
 
 local window
-local weaponList
 local scrollDock
 local panel1
 local panel2
@@ -153,16 +152,9 @@ local function openLoadout()
     -- Panel 2 panel2   ---
     -----------------------
 
-    weaponList = vgui.Create ( "DListView" , panel2 )
-    weaponList:SetPos( 5, 5)
-    weaponList:SetSize( 150, 415 )
-    weaponList:AddColumn( "Selected Weapons" )
-
-    populateWeaponList()
-
     loadoutListEditor = vgui.Create ( "DListView" , panel2 )
     loadoutListEditor:SetPos( ScrW() * 0.3315, ScrH() * 0.01 )
-    loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
+    loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.3 )
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
 
@@ -172,7 +164,6 @@ local function openLoadout()
     function loadoutListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
         currentSelectionWeapons = getLoadoutJsonTable( fileName )
-        populateWeaponList()
     end
 
     local loadoutEntry = vgui.Create ( "DTextEntry" , panel2 )
@@ -255,13 +246,6 @@ end
 
 -- Functions
 
-function populateWeaponList()
-    weaponList:Clear()
-    for _, line in pairs( currentSelectionWeapons ) do
-        weaponList:AddLine( line )
-    end
-end
-
 function createWeaponIcon ( X, Y, ent )
     local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
     weaponIcon:SetPos( X, Y )
@@ -293,7 +277,6 @@ function createWeaponIcon ( X, Y, ent )
             weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 0 ) )
             removeToSelectionWeapon ( weaponIcon.weaponClass )
         end
-        populateWeaponList()
     end
 end
 
@@ -308,7 +291,6 @@ end
 
 function addToSelectionWeapon( inputWeapon )
     table.insert( currentSelectionWeapons, inputWeapon )
-    populateWeaponList()
 end
 
 function removeToSelectionWeapon( inputWeapon )
@@ -317,7 +299,6 @@ function removeToSelectionWeapon( inputWeapon )
             table.remove( currentSelectionWeapons, I )
         end
     end
-    populateWeaponList()
 end
 
 function loadoutFileCheck( loadoutList )
