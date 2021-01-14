@@ -54,9 +54,9 @@ local function openLoadout()
     window:SetDeleteOnClose( false )
     window:MakePopup()
 
-    window.Paint = function( self, w, h )
-        draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
-    end
+    -- window.Paint = function( self, w, h )
+    --     draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
+    -- end
 
     -----------------------
     -- Sheet and Panels ---
