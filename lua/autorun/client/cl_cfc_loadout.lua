@@ -68,11 +68,11 @@ local function openLoadout()
 
     panel2 = vgui.Create( "DPanel", sheet )
     --panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "Loadout editor", panel2, "icon16/wrench.png" )
+    sheet:AddSheet( "Loadout editor", panel2, "icon16/gun.png" )
 
-    panel3 = vgui.Create( "DPanel", sheet )
+    --panel3 = vgui.Create( "DPanel", sheet )
     --panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
+    --sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
 
     -----------------------
     -- Panel 1 panel1   ---
