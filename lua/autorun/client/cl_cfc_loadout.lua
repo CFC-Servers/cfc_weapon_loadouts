@@ -2,6 +2,7 @@ local UICOLOR = Color( 36, 41, 67, 255 )
 
 local currentSelectionWeapons = {}
 local weaponCategorised = {}
+local allWeapons = {}
 
 local window
 local weaponList
@@ -9,8 +10,8 @@ local scrollDock
 local panel1
 local panel2
 local panel3
-local presetPreviewList
-local presetListEditor
+local loadoutPreviewList
+local loadoutListEditor
 
 file.CreateDir("cfc_loadout")
 
@@ -20,7 +21,7 @@ hook.Add( "InitPostEntity", "Ready", function()
 end )
 
 net.Receive( "CFC_Loadout_SendRestrictions", function()
-    local allWeapons = list.Get( "Weapon" )
+    allWeapons = list.Get( "Weapon" )
     local group = LocalPlayer():GetUserGroup()
     local weaponTable = net.ReadTable()
 
@@ -38,7 +39,6 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
             table.insert( weaponCategorised[ weapon.Category ], weapon )
         end
     end
-    allWeapons = _
 end )
 
 local function openLoadout()
@@ -65,11 +65,11 @@ local function openLoadout()
 
     panel1 = vgui.Create( "DPanel", sheet )
     --panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "Preset selection", panel1, "icon16/star.png" )
+    sheet:AddSheet( "Loadout selection", panel1, "icon16/star.png" )
 
     panel2 = vgui.Create( "DPanel", sheet )
     --panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-    sheet:AddSheet( "Preset editor", panel2, "icon16/wrench.png" )
+    sheet:AddSheet( "Loadout editor", panel2, "icon16/wrench.png" )
 
     panel3 = vgui.Create( "DPanel", sheet )
     --panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
@@ -79,20 +79,61 @@ local function openLoadout()
     -- Panel 1 panel1   ---
     -----------------------
 
-    presetPreviewList = vgui.Create ( "DListView" , panel1 )
-    presetPreviewList:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
-    presetPreviewList:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
-    presetPreviewList:SetMultiSelect( false )
-    presetPreviewList:AddColumn( "Local presets" )
+    local weaponLoadoutPreview = vgui.Create( "DPanel", panel1 )
+    weaponLoadoutPreview:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
+    weaponLoadoutPreview:SetSize( ScrW() * 0.3225, ScrH() * 0.4875 )
 
-    local presetSelectButton = vgui.Create( "DButton", panel1 )
-    presetSelectButton:SetPos( ScrW() * 0.005, ScrH() * 0.445 )
-    presetSelectButton:SetSize( ScrW() * 0.075, ScrH() * 0.025 )
-    presetSelectButton:SetText( "Select preset" )
-    presetSelectButton.DoClick = function()
-        local _, line = presetPreviewList:GetSelectedLine()
+    local weaponLoadoutPreviewScroll = vgui.Create( "DScrollPanel", panel1 )
+    weaponLoadoutPreviewScroll:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
+    weaponLoadoutPreviewScroll:SetSize( ScrW() * 0.325, ScrH() * 0.5 )
+    weaponLoadoutPreviewScroll:Hide()
+
+    loadoutPreviewList = vgui.Create ( "DListView" , panel1 )
+    loadoutPreviewList:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
+    loadoutPreviewList:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
+    loadoutPreviewList:SetMultiSelect( false )
+    loadoutPreviewList:AddColumn( "Loadouts" )
+    loadoutPreviewList.OnRowSelected = function( _, _, line )
+        weaponLoadoutPreview:Clear()
+        weaponLoadoutPreviewScroll:Clear()
+
+        local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
+        local panelToUse
+
+        if #weaponTable > 20 then
+            panelToUse = weaponLoadoutPreviewScroll
+        else
+            panelToUse = weaponLoadoutPreview
+            weaponLoadoutPreviewScroll:Hide()
+        end
+        panelToUse:Show()
+
+        local X = 5
+        local Y = 5
+        local lastWep = ""
+        for _, weaponString in SortedPairsByMemberValue( weaponTable, "Category" ) do
+                local weapon = allWeapons[weaponString]
+                if weapon and lastWep ~= weapon then
+                    lastWep = weapon
+                    createWeaponIconPreview( X, Y, weapon, panelToUse )
+
+                    X = X + 120
+                    if X >= 600 then
+                        X = 5
+                        Y = Y + 120
+                    end
+                end
+        end
+    end
+
+    local loadoutSelectButton = vgui.Create( "DButton", panel1 )
+    loadoutSelectButton:SetPos( ScrW() * 0.005, ScrH() * 0.445 )
+    loadoutSelectButton:SetSize( ScrW() * 0.075, ScrH() * 0.025 )
+    loadoutSelectButton:SetText( "Select loadout" )
+    loadoutSelectButton.DoClick = function()
+        local _, line = loadoutPreviewList:GetSelectedLine()
         local fileName = line:GetValue( 1 )
-        currentSelectionWeapons = getPresetJsonTable( fileName )
+        currentSelectionWeapons = getLoadoutJsonTable( fileName )
 
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( currentSelectionWeapons )
@@ -155,59 +196,59 @@ local function openLoadout()
         populateWeaponList()
     end
 
-    presetListEditor = vgui.Create ( "DListView" , panel2 )
-    presetListEditor:SetPos( 475, 5)
-    presetListEditor:SetSize( 150, 415 )
-    presetListEditor:SetMultiSelect( false )
-    presetListEditor:AddColumn( "Saved Presets" )
+    loadoutListEditor = vgui.Create ( "DListView" , panel2 )
+    loadoutListEditor:SetPos( 475, 5)
+    loadoutListEditor:SetSize( 150, 415 )
+    loadoutListEditor:SetMultiSelect( false )
+    loadoutListEditor:AddColumn( "Saved Loadouts" )
 
-    presetFileCheck( presetPreviewList )
-    presetFileCheck( presetListEditor )
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
 
-    function presetListEditor:DoDoubleClick( _, line )
+    function loadoutListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
-        currentSelectionWeapons = getPresetJsonTable( fileName )
+        currentSelectionWeapons = getLoadoutJsonTable( fileName )
         populateWeaponList()
     end
 
-    local presetEntry = vgui.Create ( "DTextEntry" , panel2 )
-    presetEntry:SetSize( 200, 20 )
-    presetEntry:SetPos( ( window:GetWide() - presetEntry:GetWide() ) / 2, 100 )
+    local loadoutEntry = vgui.Create ( "DTextEntry" , panel2 )
+    loadoutEntry:SetSize( 200, 20 )
+    loadoutEntry:SetPos( ( window:GetWide() - loadoutEntry:GetWide() ) / 2, 100 )
 
-    local presetAddButton = vgui.Create( "DButton", panel2 )
-    presetAddButton:SetSize( 200, 20 )
-    presetAddButton:SetPos( ( window:GetWide() - presetAddButton:GetWide() ) / 2, 125 )
-    presetAddButton:SetText( "Add preset with current weapons" )
+    local loadoutAddButton = vgui.Create( "DButton", panel2 )
+    loadoutAddButton:SetSize( 200, 20 )
+    loadoutAddButton:SetPos( ( window:GetWide() - loadoutAddButton:GetWide() ) / 2, 125 )
+    loadoutAddButton:SetText( "Add loadout with current weapons" )
 
-    presetAddButton.DoClick = function()
-        local fileName = string.match( presetEntry:GetValue(), "[a-zA-Z0-9_]*" )
+    loadoutAddButton.DoClick = function()
+        local fileName = string.match( loadoutEntry:GetValue(), "[a-zA-Z0-9_]*" )
         if fileName == "" then
-            presetAddButton:SetText( "Please enter a valid name." )
+            loadoutAddButton:SetText( "Please enter a valid name." )
             timer.Simple( 1, function ()
-                if IsValid( presetAddButton ) then
-                    presetAddButton:SetText( "Add preset with current weapons" )
+                if IsValid( loadoutAddButton ) then
+                    loadoutAddButton:SetText( "Add loadout with current weapons" )
                 end
             end)
         elseif currentSelectionWeapons[1] == nil then
-            presetAddButton:SetText( "Please add weapons to the preset." )
+            loadoutAddButton:SetText( "Please add weapons to the loadout." )
             timer.Simple( 1, function ()
-                if IsValid( presetAddButton ) then
-                    presetAddButton:SetText( "Add preset with current weapons" )
+                if IsValid( loadoutAddButton ) then
+                    loadoutAddButton:SetText( "Add loadout with current weapons" )
                 end
             end)
         else
-            presetFileCreate( fileName )
+            loadoutFileCreate( fileName )
         end
     end
 
-    local presetRemoveButton = vgui.Create( "DButton", panel2 )
-    presetRemoveButton:SetSize( 200, 20 )
-    presetRemoveButton:SetPos( ( window:GetWide() - presetRemoveButton:GetWide() ) / 2, 150 )
-    presetRemoveButton:SetText( "Remove selected presets" )
-    presetRemoveButton.DoClick = function()
-        for k, line in pairs( presetListEditor.Lines ) do
+    local loadoutRemoveButton = vgui.Create( "DButton", panel2 )
+    loadoutRemoveButton:SetSize( 200, 20 )
+    loadoutRemoveButton:SetPos( ( window:GetWide() - loadoutRemoveButton:GetWide() ) / 2, 150 )
+    loadoutRemoveButton:SetText( "Remove selected loadouts" )
+    loadoutRemoveButton.DoClick = function()
+        for k, line in pairs( loadoutListEditor.Lines ) do
             if line:IsLineSelected() then
-                presetFileDelete( line:GetValue( 1 ) )
+                loadoutFileDelete( line:GetValue( 1 ) )
             end
         end
     end
@@ -237,10 +278,10 @@ local function openLoadout()
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
 
-            createWeaponIcon ( X, Y, ent )
+            createWeaponIcon( X, Y, ent )
 
             X = X + 120
-            if X >= 600 then
+        if X >= 600 then
             X = 0
             Y = Y + 120
             end
@@ -292,6 +333,15 @@ function createWeaponIcon ( X, Y, ent )
     end
 end
 
+function createWeaponIconPreview( X, Y, ent, panel )
+    local weaponIcon = vgui.Create( "ContentIcon", panel )
+    weaponIcon:SetPos( X, Y )
+    weaponIcon:SetName( ent.PrintName or ent.ClassName )
+    weaponIcon:SetSpawnName( ent.ClassName )
+    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+    weaponIcon.weaponClass = ent.ClassName
+end
+
 function addToSelectionWeapon( inputWeapon )
     table.insert( currentSelectionWeapons, inputWeapon )
     populateWeaponList()
@@ -306,31 +356,31 @@ function removeToSelectionWeapon( inputWeapon )
     populateWeaponList()
 end
 
-function presetFileCheck( presetList )
+function loadoutFileCheck( loadoutList )
     local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-    presetList:Clear()
+    loadoutList:Clear()
     for _, filename in pairs( files ) do
         local name = string.Replace( filename, ".json", "" )
-        presetList:AddLine( name )
+        loadoutList:AddLine( name )
     end
 end
 
-function presetFileCreate( fileName)
+function loadoutFileCreate( fileName)
     local jsonTable = util.TableToJSON( currentSelectionWeapons, true )
     file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
 
-    presetFileCheck( presetPreviewList )
-    presetFileCheck( presetListEditor )
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
 end
 
-function presetFileDelete( presetName )
-    file.Delete( "cfc_loadout/" .. presetName .. ".json" )
-    presetFileCheck( presetPreviewList )
-    presetFileCheck( presetListEditor )
+function loadoutFileDelete( loadoutName )
+    file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
 end
 
-function getPresetJsonTable( presetFileName )
-    local fileContent = file.Read( "cfc_loadout/" .. presetFileName .. ".json", "DATA" )
+function getLoadoutJsonTable( loadoutFileName )
+    local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
     return util.JSONToTable( fileContent )
 end
 
