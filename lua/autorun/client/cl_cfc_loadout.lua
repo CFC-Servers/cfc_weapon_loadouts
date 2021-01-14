@@ -44,11 +44,7 @@ end )
 local function openLoadout()
     -- Window init
     window = vgui.Create( "DFrame" )
-    if ScrW() > 640 then -- Make it larger if we can.
-        window:SetSize( ScrW() * 0.8, ScrH() * 0.8 )
-    else
-        window:SetSize( 640, 480 )
-    end
+    window:SetSize( 800, 600 )
     window:Center()
     window:SetTitle( "CFC Loadout" )
     window:SetDeleteOnClose( false )
@@ -84,14 +80,14 @@ local function openLoadout()
     -----------------------
 
     presetPreviewList = vgui.Create ( "DListView" , panel1 )
-    presetPreviewList:SetPos( 170, 20 )
-    presetPreviewList:SetSize( 300, 300 )
+    presetPreviewList:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
+    presetPreviewList:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
     presetPreviewList:SetMultiSelect( false )
     presetPreviewList:AddColumn( "Local presets" )
 
     local presetSelectButton = vgui.Create( "DButton", panel1 )
-    presetSelectButton:SetSize( 300, 30 )
-    presetSelectButton:SetPos( ( window:GetWide() - presetSelectButton:GetWide() ) / 2, 325 )
+    presetSelectButton:SetPos( ScrW() * 0.005, ScrH() * 0.445 )
+    presetSelectButton:SetSize( ScrW() * 0.075, ScrH() * 0.025 )
     presetSelectButton:SetText( "Select preset" )
     presetSelectButton.DoClick = function()
         local _, line = presetPreviewList:GetSelectedLine()
@@ -104,8 +100,8 @@ local function openLoadout()
     end
 
     local resetSelectButton = vgui.Create( "DButton", panel1 )
-    resetSelectButton:SetSize( 300, 30 )
-    resetSelectButton:SetPos( ( window:GetWide() - resetSelectButton:GetWide() ) / 2, 360 )
+    resetSelectButton:SetPos( ScrW() * 0.005, ScrH() * 0.4725 )
+    resetSelectButton:SetSize( ScrW() * 0.075, ScrH() * 0.025 )
     resetSelectButton:SetText( "Select default loadout" )
     resetSelectButton.DoClick = function()
         net.Start( "CFC_Loadout_Resetweapons" )
