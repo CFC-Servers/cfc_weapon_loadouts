@@ -44,7 +44,11 @@ end )
 local function openLoadout()
     -- Window init
     window = vgui.Create( "DFrame" )
-    window:SetSize( 1280, 720 )
+    if ScrW() > 640 then -- Make it larger if we can.
+        window:SetSize( ScrW() * 0.8, ScrH() * 0.8 )
+    else
+        window:SetSize( 640, 480 )
+    end
     window:Center()
     window:SetTitle( "CFC Loadout" )
     window:SetDeleteOnClose( false )
