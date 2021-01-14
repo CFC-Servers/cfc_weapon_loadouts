@@ -197,8 +197,8 @@ local function openLoadout()
     end
 
     loadoutListEditor = vgui.Create ( "DListView" , panel2 )
-    loadoutListEditor:SetPos( 475, 5)
-    loadoutListEditor:SetSize( 150, 415 )
+    loadoutListEditor:SetPos( ScrW() * 0.3315, ScrH() * 0.01 )
+    loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
 
