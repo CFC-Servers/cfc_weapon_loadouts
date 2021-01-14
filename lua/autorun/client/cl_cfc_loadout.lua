@@ -14,10 +14,10 @@ local presetListEditor
 
 file.CreateDir("cfc_loadout")
 
-hook.Add( "InitPostEntity", "Ready", function()
+--hook.Add( "InitPostEntity", "Ready", function()
     net.Start( "CFC_Loadout_InitialSpawn" )
     net.SendToServer()
-end )
+--end )
 
 net.Receive( "CFC_Loadout_SendRestrictions", function()
     local allWeapons = list.Get( "Weapon" )
@@ -42,14 +42,12 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
 end )
 
 local function openLoadout()
-
-    if window then window:Remove() end
-
     -- Window init
     window = vgui.Create( "DFrame" )
     window:SetSize( 640, 480 )
     window:Center()
     window:SetTitle( "CFC Loadout" )
+    window:SetDeleteOnClose( false )
     window:MakePopup()
 
     window.Paint = function( self, w, h )
@@ -349,3 +347,5 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
+
+openLoadout()
