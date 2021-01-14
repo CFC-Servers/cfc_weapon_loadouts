@@ -153,8 +153,8 @@ local function openLoadout()
     -----------------------
 
     loadoutListEditor = vgui.Create ( "DListView" , panel2 )
-    loadoutListEditor:SetPos( ScrW() * 0.3315, ScrH() * 0.01 )
-    loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.3 )
+    loadoutListEditor:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
+    loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4 )
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
 
@@ -166,35 +166,53 @@ local function openLoadout()
         currentSelectionWeapons = getLoadoutJsonTable( fileName )
     end
 
-    local loadoutEntry = vgui.Create ( "DTextEntry" , panel2 )
-    loadoutEntry:SetSize( 200, 20 )
-    loadoutEntry:SetPos( ( window:GetWide() - loadoutEntry:GetWide() ) / 2, 100 )
+    local saveLoadoutButton = vgui.Create( "DButton", panel2 )
+    saveLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.4125 )
+    saveLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
+    saveLoadoutButton:SetText( "Save to selected" )
 
-    local loadoutAddButton = vgui.Create( "DButton", panel2 )
-    loadoutAddButton:SetSize( 200, 20 )
-    loadoutAddButton:SetPos( ( window:GetWide() - loadoutAddButton:GetWide() ) / 2, 125 )
-    loadoutAddButton:SetText( "Add loadout with current weapons" )
+    local renameLoadoutButton = vgui.Create( "DButton", panel2 )
+    renameLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.435 )
+    renameLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
+    renameLoadoutButton:SetText( "Rename selected" )
 
-    loadoutAddButton.DoClick = function()
-        local fileName = string.match( loadoutEntry:GetValue(), "[a-zA-Z0-9_]*" )
-        if fileName == "" then
-            loadoutAddButton:SetText( "Please enter a valid name." )
-            timer.Simple( 1, function ()
-                if IsValid( loadoutAddButton ) then
-                    loadoutAddButton:SetText( "Add loadout with current weapons" )
-                end
-            end)
-        elseif currentSelectionWeapons[1] == nil then
-            loadoutAddButton:SetText( "Please add weapons to the loadout." )
-            timer.Simple( 1, function ()
-                if IsValid( loadoutAddButton ) then
-                    loadoutAddButton:SetText( "Add loadout with current weapons" )
-                end
-            end)
-        else
-            loadoutFileCreate( fileName )
+    local newLoadoutButton = vgui.Create( "DButton", panel2 )
+    newLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.4575 )
+    newLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
+    newLoadoutButton:SetText( "Create new" )
+
+    local deleteLoadoutButton = vgui.Create( "DButton", panel2 )
+    deleteLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.48 )
+    deleteLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
+    deleteLoadoutButton:SetText( "Delete selected" )
+    deleteLoadoutButton.DoClick = function()
+        for k, line in pairs( loadoutListEditor.Lines ) do
+            if line:IsLineSelected() then
+                loadoutFileDelete( line:GetValue( 1 ) )
+            end
         end
     end
+
+    -- newLoadoutButton.DoClick = function()
+    --     local fileName = string.match( loadoutEntry:GetValue(), "[a-zA-Z0-9_]*" )
+    --     if fileName == "" then
+    --         newLoadoutButton:SetText( "Please enter a valid name." )
+    --         timer.Simple( 1, function ()
+    --             if IsValid( newLoadoutButton ) then
+    --                 newLoadoutButton:SetText( "Add loadout with current weapons" )
+    --             end
+    --         end)
+    --     elseif currentSelectionWeapons[1] == nil then
+    --         newLoadoutButton:SetText( "Please add weapons to the loadout." )
+    --         timer.Simple( 1, function ()
+    --             if IsValid( newLoadoutButton ) then
+    --                 newLoadoutButton:SetText( "Add loadout with current weapons" )
+    --             end
+    --         end)
+    --     else
+    --         loadoutFileCreate( fileName )
+    --     end
+    -- end
 
     local loadoutRemoveButton = vgui.Create( "DButton", panel2 )
     loadoutRemoveButton:SetSize( 200, 20 )
@@ -208,11 +226,7 @@ local function openLoadout()
         end
     end
 
-    -----------------------
-    -- Panel 3 panel3   ---
-    -----------------------
-
-    scrollDock = vgui.Create( "DScrollPanel", panel3 )
+    scrollDock = vgui.Create( "DScrollPanel", panel2 )
     scrollDock:Dock( FILL )
 
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
