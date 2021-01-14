@@ -160,42 +160,6 @@ local function openLoadout()
 
     populateWeaponList()
 
-    local weaponEntry = vgui.Create ( "DTextEntry" , panel2 )
-    weaponEntry:SetSize( 200, 20 )
-    weaponEntry:SetPos( ( window:GetWide() - weaponEntry:GetWide() ) / 2, 5 )
-
-    local weaponAddButton = vgui.Create( "DButton", panel2 )
-    weaponAddButton:SetSize( 200, 20 )
-    weaponAddButton:SetPos( ( window:GetWide() - weaponAddButton:GetWide() ) / 2, 30 )
-    weaponAddButton:SetText( "Add weapon" )
-
-    weaponAddButton.DoClick = function()
-        local weaponsList = list.Get( "Weapon" )
-        if weaponsList[weaponEntry:GetValue()] then
-            addToSelectionWeapon ( weapon )
-        else
-            weaponAddButton:SetText( "Please enter a valid weapon." )
-            timer.Simple( 1, function ()
-                if IsValid( weaponAddButton ) then
-                    weaponAddButton:SetText( "Add weapon" )
-                end
-            end)
-        end
-    end
-
-    local weaponRemoveButton = vgui.Create( "DButton", panel2 )
-    weaponRemoveButton:SetSize( 200, 20 )
-    weaponRemoveButton:SetPos( ( window:GetWide() - weaponAddButton:GetWide() ) / 2, 55 )
-    weaponRemoveButton:SetText( "Remove selected weapons" )
-    weaponRemoveButton.DoClick = function()
-        for _, line in pairs( weaponList.Lines ) do
-            if line:IsLineSelected() then
-                removeToSelectionWeapon( line:GetColumnText( 1 ) )
-            end
-        end
-        populateWeaponList()
-    end
-
     loadoutListEditor = vgui.Create ( "DListView" , panel2 )
     loadoutListEditor:SetPos( ScrW() * 0.3315, ScrH() * 0.01 )
     loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
