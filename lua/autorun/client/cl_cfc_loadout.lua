@@ -14,10 +14,10 @@ local presetListEditor
 
 file.CreateDir("cfc_loadout")
 
---hook.Add( "InitPostEntity", "Ready", function()
+hook.Add( "InitPostEntity", "Ready", function()
     net.Start( "CFC_Loadout_InitialSpawn" )
     net.SendToServer()
---end )
+end )
 
 net.Receive( "CFC_Loadout_SendRestrictions", function()
     local allWeapons = list.Get( "Weapon" )
@@ -347,5 +347,3 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
-
-openLoadout()
