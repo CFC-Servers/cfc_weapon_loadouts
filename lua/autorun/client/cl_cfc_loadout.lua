@@ -8,7 +8,6 @@ local window
 local scrollDock
 local panel1
 local panel2
-local panel3
 local loadoutPreviewList
 local loadoutListEditor
 
@@ -131,11 +130,10 @@ local function openLoadout()
     loadoutSelectButton:SetText( "Select loadout" )
     loadoutSelectButton.DoClick = function()
         local _, line = loadoutPreviewList:GetSelectedLine()
-        local fileName = line:GetValue( 1 )
-        currentSelectionWeapons = getLoadoutJsonTable( fileName )
+        local selectedWeapons = getLoadoutJsonTable( line:GetValue( 1 ) )
 
         net.Start( "CFC_Loadout_WeaponTable" )
-        net.WriteTable( currentSelectionWeapons )
+        net.WriteTable( selectedWeapons )
         net.SendToServer()
     end
 
@@ -151,12 +149,32 @@ local function openLoadout()
     -----------------------
     -- Panel 2 panel2   ---
     -----------------------
+    local weaponIcons = {}
 
     loadoutListEditor = vgui.Create ( "DListView" , panel2 )
     loadoutListEditor:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
     loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4 )
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
+    loadoutListEditor.OnRowSelected = function( _, _, line )
+        local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
+        local placeHolder = {}
+
+        for k,v in pairs( weaponTable ) do
+            placeHolder[v] = k
+        end
+        weaponTable = placeHolder
+        placeHolder = _
+
+        for weaponString in pairs( weaponIcons ) do
+            local icon = weaponIcons[weaponString]
+            if weaponTable[weaponString] then
+                icon:Show()
+            else
+                icon:Hide()
+            end
+        end
+    end
 
     loadoutFileCheck( loadoutPreviewList )
     loadoutFileCheck( loadoutListEditor )
@@ -214,26 +232,13 @@ local function openLoadout()
     --     end
     -- end
 
-    local loadoutRemoveButton = vgui.Create( "DButton", panel2 )
-    loadoutRemoveButton:SetSize( 200, 20 )
-    loadoutRemoveButton:SetPos( ( window:GetWide() - loadoutRemoveButton:GetWide() ) / 2, 150 )
-    loadoutRemoveButton:SetText( "Remove selected loadouts" )
-    loadoutRemoveButton.DoClick = function()
-        for k, line in pairs( loadoutListEditor.Lines ) do
-            if line:IsLineSelected() then
-                loadoutFileDelete( line:GetValue( 1 ) )
-            end
-        end
-    end
-
     scrollDock = vgui.Create( "DScrollPanel", panel2 )
-    scrollDock:Dock( FILL )
+    scrollDock:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
+    scrollDock:SetSize( ScrW() * 0.325, ScrH() * 0.5 )
 
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
     --weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
-    --weaponCats:SetPadding( 0 )
-    --weaponCats:Dock( FILL )
-    weaponCats:SetSize( 630, 100 )
+    weaponCats:SetSize( ScrW() * 0.315, ScrH() * 0.4875 )
 
     for catName, v in SortedPairs( weaponCategorised ) do
         local X = 0
@@ -243,12 +248,9 @@ local function openLoadout()
         weaponCatPanel:SetLabel( catName )
         weaponCatPanel:SetExpanded( false )
         --weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
-        --weaponCats:AddSheet( catName, weaponCatPanel )
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
-
-            createWeaponIcon( X, Y, ent )
-
+            weaponIcons[ent.ClassName] = createWeaponIcon( X, Y, ent ).selectionShape
             X = X + 120
         if X >= 600 then
             X = 0
@@ -271,27 +273,18 @@ function createWeaponIcon ( X, Y, ent )
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 0 ) )
+    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
-
-    if table.HasValue( currentSelectionWeapons, weaponIcon.weaponClass ) then
-        weaponIcon.Selected = true
-        weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 200 ) )
-    else
-        weaponIcon.Selected = false
-    end
-
+    weaponIcon.selectionShape:Hide()
     weaponIcon.DoClick = function()
-        if weaponIcon.Selected == false then
-            weaponIcon.Selected = true
-            weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 200 ) )
-            addToSelectionWeapon( weaponIcon.weaponClass )
+        if weaponIcon.selectionShape:IsVisible() then
+            weaponIcon.selectionShape:Hide()
         else
-            weaponIcon.Selected = false
-            weaponIcon.selectionShape:SetColor( Color( 255, 0, 0, 0 ) )
-            removeToSelectionWeapon ( weaponIcon.weaponClass )
+            weaponIcon.selectionShape:Show()
         end
     end
+
+    return weaponIcon
 end
 
 function createWeaponIconPreview( X, Y, ent, panel )
