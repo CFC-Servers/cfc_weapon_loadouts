@@ -106,6 +106,7 @@ end
 
 local function loadoutFileDelete( loadoutName )
     file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
+
     loadoutFileCheck( loadoutPreviewList )
     loadoutFileCheck( loadoutListEditor )
 end
@@ -113,6 +114,33 @@ end
 local function getLoadoutJsonTable( loadoutFileName )
     local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
     return util.JSONToTable( fileContent )
+end
+
+local function confirmationPopup( windowName, shouldTextInput, labelText )
+    local popupFrame = vgui.Create( "DFrame" )
+    popupFrame:SetSize( 300, 150 )
+    popupFrame:Center()
+    popupFrame:SetTitle( windowName )
+    popupFrame:SetVisible( true )
+    popupFrame:SetDraggable( false )
+    popupFrame:MakePopup()
+
+    local popupText = vgui.Create( "DLabel", popupFrame )
+    popupText:SetPos( popupFrame:GetWide() / ( #labelText * 0.15 ), 40 )
+    popupText:SetSize( 300, 10 )
+    popupText:SetText( labelText )
+
+    if shouldTextInput then
+        local popupEntry = vgui.Create( "DTextEntry", popupFrame )
+        popupEntry:SetPos( popupFrame:GetWide() * 0.18, 80 )
+        popupEntry:SetSize( 200, 20 )
+    end
+
+    local popupButton = vgui.Create( "DButton", popupFrame )
+    popupButton:SetText( "Confirm" )
+    popupButton:SetPos (popupFrame:GetWide() * 0.18, 120 )
+    popupButton:SetSize( 200, 20 )
+    return popupButton.DoClick
 end
 
 -- Derma stuff
@@ -266,16 +294,25 @@ local function openLoadout()
     saveLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.4125 )
     saveLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     saveLoadoutButton:SetText( "Save to selected" )
+    saveLoadoutButton.DoClick = function()
+    end
 
     local renameLoadoutButton = vgui.Create( "DButton", panel2 )
     renameLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.435 )
     renameLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     renameLoadoutButton:SetText( "Rename selected" )
+    renameLoadoutButton.DoClick = function()
+    end
 
     local newLoadoutButton = vgui.Create( "DButton", panel2 )
     newLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.4575 )
     newLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     newLoadoutButton:SetText( "Create new" )
+    renameLoadoutButton.DoClick = function()
+        local confirmed = confirmationPopup( "Rename loadout", true, "Please enter a name." )
+        -- run this v whenever the popup above gets clicked
+        print( confirmed, text )
+    end
 
     local deleteLoadoutButton = vgui.Create( "DButton", panel2 )
     deleteLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.48 )
