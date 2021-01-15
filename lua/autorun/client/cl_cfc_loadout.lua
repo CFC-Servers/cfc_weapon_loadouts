@@ -1,6 +1,5 @@
 local UICOLOR = Color( 36, 41, 67, 255 )
 
-local currentSelectionWeapons = {}
 local weaponCategorised = {}
 local allWeapons = {}
 
@@ -75,18 +74,6 @@ local function createWeaponIconPreview( X, Y, ent, panel )
     weaponIcon.weaponClass = ent.ClassName
 end
 
-local function addToSelectionWeapon( inputWeapon )
-    table.insert( currentSelectionWeapons, inputWeapon )
-end
-
-local function removeToSelectionWeapon( inputWeapon )
-    for I, value in pairs( currentSelectionWeapons ) do
-        if value == inputWeapon then
-            table.remove( currentSelectionWeapons, I )
-        end
-    end
-end
-
 local function loadoutFileCheck( loadoutList )
     local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
     loadoutList:Clear()
@@ -96,9 +83,33 @@ local function loadoutFileCheck( loadoutList )
     end
 end
 
-local function loadoutFileCreate( fileName)
-    local jsonTable = util.TableToJSON( currentSelectionWeapons, true )
+local function loadoutFileCreate( fileName )
     file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
+
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
+end
+
+local function loadoutFileSave( fileName, weaponsList )
+    local jsonTableSave = util.TableToJSON( weaponsList, true )
+    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTableSave )
+
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
+end
+
+local function getSelectedWeapons( shapeTable )
+    local selectedWeapons = {}
+    for weaponName, shape in pairs( shapeTable ) do
+        if shape:IsVisible() then
+            table.insert( selectedWeapons, weaponName )
+        end
+    end
+    return selectedWeapons
+end
+
+local function loadoutFileRename( originalName, newName )
+    file.Rename( "cfc_loadout/" .. originalName .. ".json", "cfc_loadout/" .. newName .. ".json" )
 
     loadoutFileCheck( loadoutPreviewList )
     loadoutFileCheck( loadoutListEditor )
@@ -116,7 +127,7 @@ local function getLoadoutJsonTable( loadoutFileName )
     return util.JSONToTable( fileContent )
 end
 
-local function confirmationPopup( windowName, shouldTextInput, labelText )
+local function confirmationPopup( windowName, labelText, shouldTextInput, callback )
     local popupFrame = vgui.Create( "DFrame" )
     popupFrame:SetSize( 300, 150 )
     popupFrame:Center()
@@ -130,8 +141,10 @@ local function confirmationPopup( windowName, shouldTextInput, labelText )
     popupText:SetSize( 300, 10 )
     popupText:SetText( labelText )
 
+    local popupEntry
+
     if shouldTextInput then
-        local popupEntry = vgui.Create( "DTextEntry", popupFrame )
+        popupEntry = vgui.Create( "DTextEntry", popupFrame )
         popupEntry:SetPos( popupFrame:GetWide() * 0.18, 80 )
         popupEntry:SetSize( 200, 20 )
     end
@@ -140,7 +153,15 @@ local function confirmationPopup( windowName, shouldTextInput, labelText )
     popupButton:SetText( "Confirm" )
     popupButton:SetPos (popupFrame:GetWide() * 0.18, 120 )
     popupButton:SetSize( 200, 20 )
-    return popupButton.DoClick
+
+    popupButton.DoClick = function()
+        if shouldTextInput then
+            callback( popupEntry:GetValue() )
+        else
+            callback()
+        end
+        popupFrame:Close()
+    end
 end
 
 -- Derma stuff
@@ -204,6 +225,8 @@ local function openLoadout()
         local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
         local panelToUse
 
+        if weaponTable == nil then return end
+
         if #weaponTable > 20 then
             panelToUse = weaponLoadoutPreviewScroll
         else
@@ -264,11 +287,21 @@ local function openLoadout()
     loadoutListEditor:AddColumn( "Saved Loadouts" )
     loadoutListEditor.OnRowSelected = function( _, _, line )
         local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
+
+        if weaponTable == nil then
+            for weaponString in pairs( weaponIcons ) do
+                local icon = weaponIcons[weaponString]
+                icon:Hide()
+            end
+        return
+        end
+
         local placeHolder = {}
 
         for k,v in pairs( weaponTable ) do
             placeHolder[v] = k
         end
+
         weaponTable = placeHolder
         placeHolder = _
 
@@ -295,6 +328,11 @@ local function openLoadout()
     saveLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     saveLoadoutButton:SetText( "Save to selected" )
     saveLoadoutButton.DoClick = function()
+        confirmationPopup( "Save loadout", "Do you want to overwrite this loadout?", false, function()
+            local weaponsTable = getSelectedWeapons( weaponIcons )
+            local _, saveLine = loadoutListEditor:GetSelectedLine()
+            loadoutFileSave( saveLine:GetValue( 1 ), weaponsTable )
+        end)
     end
 
     local renameLoadoutButton = vgui.Create( "DButton", panel2 )
@@ -302,16 +340,20 @@ local function openLoadout()
     renameLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     renameLoadoutButton:SetText( "Rename selected" )
     renameLoadoutButton.DoClick = function()
+        confirmationPopup( "Rename loadout", "Please enter a name.", true, function( textEntryValue )
+            local _, renameLine = loadoutListEditor:GetSelectedLine()
+            loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
+        end)
     end
 
     local newLoadoutButton = vgui.Create( "DButton", panel2 )
     newLoadoutButton:SetPos( ScrW() * 0.005, ScrH() * 0.4575 )
     newLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     newLoadoutButton:SetText( "Create new" )
-    renameLoadoutButton.DoClick = function()
-        local confirmed = confirmationPopup( "Rename loadout", true, "Please enter a name." )
-        -- run this v whenever the popup above gets clicked
-        print( confirmed, text )
+    newLoadoutButton.DoClick = function()
+        confirmationPopup(  "New loadout", "Please enter a name.", true, function( textEntryValue )
+            loadoutFileCreate( textEntryValue )
+        end)
     end
 
     local deleteLoadoutButton = vgui.Create( "DButton", panel2 )
@@ -319,33 +361,14 @@ local function openLoadout()
     deleteLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     deleteLoadoutButton:SetText( "Delete selected" )
     deleteLoadoutButton.DoClick = function()
-        for k, line in pairs( loadoutListEditor.Lines ) do
-            if line:IsLineSelected() then
-                loadoutFileDelete( line:GetValue( 1 ) )
+        confirmationPopup(  "Delete loadout", "Are you sure you want to delete the selected loadouts?", false, function()
+            for k, lineDel in pairs( loadoutListEditor.Lines ) do
+                if lineDel:IsLineSelected() then
+                    loadoutFileDelete( lineDel:GetValue( 1 ) )
+                end
             end
-        end
+        end)
     end
-
-    -- newLoadoutButton.DoClick = function()
-    --     local fileName = string.match( loadoutEntry:GetValue(), "[a-zA-Z0-9_]*" )
-    --     if fileName == "" then
-    --         newLoadoutButton:SetText( "Please enter a valid name." )
-    --         timer.Simple( 1, function ()
-    --             if IsValid( newLoadoutButton ) then
-    --                 newLoadoutButton:SetText( "Add loadout with current weapons" )
-    --             end
-    --         end)
-    --     elseif currentSelectionWeapons[1] == nil then
-    --         newLoadoutButton:SetText( "Please add weapons to the loadout." )
-    --         timer.Simple( 1, function ()
-    --             if IsValid( newLoadoutButton ) then
-    --                 newLoadoutButton:SetText( "Add loadout with current weapons" )
-    --             end
-    --         end)
-    --     else
-    --         loadoutFileCreate( fileName )
-    --     end
-    -- end
 
     scrollDock = vgui.Create( "DScrollPanel", panel2 )
     scrollDock:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
