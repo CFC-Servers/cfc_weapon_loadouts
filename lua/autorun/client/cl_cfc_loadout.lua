@@ -18,26 +18,104 @@ hook.Add( "InitPostEntity", "Ready", function()
     net.SendToServer()
 end )
 
-net.Receive( "CFC_Loadout_SendRestrictions", function()
+--net.Receive( "CFC_Loadout_SendRestrictions", function()
     allWeapons = list.Get( "Weapon" )
-    local group = LocalPlayer():GetUserGroup()
-    local weaponTable = net.ReadTable()
+    -- local group = LocalPlayer():GetUserGroup()
+    --local weaponTable = net.ReadTable()
 
     for _, weapon in pairs( allWeapons ) do
-        local weaponClass =  weapon.ClassName
-        local weaponPerms = weaponTable[ weaponClass ]
-        local isRestricted
+        -- local weaponClass =  weapon.ClassName
+        -- local weaponPerms = weaponTable[ weaponClass ]
+        -- local isRestricted
 
-        if istable( weaponPerms ) then
-            isRestricted = table.HasValue( weaponPerms, group )
-        end
+        -- if istable( weaponPerms ) then
+        --     isRestricted = table.HasValue( weaponPerms, group )
+        -- end
 
         if weapon.Spawnable and isRestricted ~= true then
             weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
             table.insert( weaponCategorised[ weapon.Category ], weapon )
         end
     end
-end )
+--end )
+
+-- Functions
+
+local function createWeaponIcon ( X, Y, ent )
+    local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
+    weaponIcon:SetPos( X, Y )
+    weaponIcon:SetName( ent.PrintName or ent.ClassName )
+    weaponIcon:SetSpawnName( ent.ClassName )
+    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+    weaponIcon.weaponClass = ent.ClassName
+
+    weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
+    weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
+    weaponIcon.selectionShape:SetPos( 5, 5 )
+    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
+    weaponIcon.selectionShape:SetSize( 120, 120 )
+    weaponIcon.selectionShape:Hide()
+    weaponIcon.DoClick = function()
+        if weaponIcon.selectionShape:IsVisible() then
+            weaponIcon.selectionShape:Hide()
+        else
+            weaponIcon.selectionShape:Show()
+        end
+    end
+
+    return weaponIcon
+end
+
+local function createWeaponIconPreview( X, Y, ent, panel )
+    local weaponIcon = vgui.Create( "ContentIcon", panel )
+    weaponIcon:SetPos( X, Y )
+    weaponIcon:SetName( ent.PrintName or ent.ClassName )
+    weaponIcon:SetSpawnName( ent.ClassName )
+    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
+    weaponIcon.weaponClass = ent.ClassName
+end
+
+local function addToSelectionWeapon( inputWeapon )
+    table.insert( currentSelectionWeapons, inputWeapon )
+end
+
+local function removeToSelectionWeapon( inputWeapon )
+    for I, value in pairs( currentSelectionWeapons ) do
+        if value == inputWeapon then
+            table.remove( currentSelectionWeapons, I )
+        end
+    end
+end
+
+local function loadoutFileCheck( loadoutList )
+    local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
+    loadoutList:Clear()
+    for _, filename in pairs( files ) do
+        local name = string.Replace( filename, ".json", "" )
+        loadoutList:AddLine( name )
+    end
+end
+
+local function loadoutFileCreate( fileName)
+    local jsonTable = util.TableToJSON( currentSelectionWeapons, true )
+    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
+
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
+end
+
+local function loadoutFileDelete( loadoutName )
+    file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
+    loadoutFileCheck( loadoutPreviewList )
+    loadoutFileCheck( loadoutListEditor )
+end
+
+local function getLoadoutJsonTable( loadoutFileName )
+    local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
+    return util.JSONToTable( fileContent )
+end
+
+-- Derma stuff
 
 local function openLoadout()
     -- Window init
@@ -234,7 +312,7 @@ local function openLoadout()
 
     scrollDock = vgui.Create( "DScrollPanel", panel2 )
     scrollDock:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
-    scrollDock:SetSize( ScrW() * 0.325, ScrH() * 0.5 )
+    scrollDock:SetSize( ScrW() * 0.325, ScrH() * 0.49 )
 
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
     --weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
@@ -258,82 +336,6 @@ local function openLoadout()
             end
         end
     end
-end
-
--- Functions
-
-function createWeaponIcon ( X, Y, ent )
-    local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
-    weaponIcon:SetPos( X, Y )
-    weaponIcon:SetName( ent.PrintName or ent.ClassName )
-    weaponIcon:SetSpawnName( ent.ClassName )
-    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.weaponClass = ent.ClassName
-
-    weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
-    weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
-    weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
-    weaponIcon.selectionShape:SetSize( 120, 120 )
-    weaponIcon.selectionShape:Hide()
-    weaponIcon.DoClick = function()
-        if weaponIcon.selectionShape:IsVisible() then
-            weaponIcon.selectionShape:Hide()
-        else
-            weaponIcon.selectionShape:Show()
-        end
-    end
-
-    return weaponIcon
-end
-
-function createWeaponIconPreview( X, Y, ent, panel )
-    local weaponIcon = vgui.Create( "ContentIcon", panel )
-    weaponIcon:SetPos( X, Y )
-    weaponIcon:SetName( ent.PrintName or ent.ClassName )
-    weaponIcon:SetSpawnName( ent.ClassName )
-    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.weaponClass = ent.ClassName
-end
-
-function addToSelectionWeapon( inputWeapon )
-    table.insert( currentSelectionWeapons, inputWeapon )
-end
-
-function removeToSelectionWeapon( inputWeapon )
-    for I, value in pairs( currentSelectionWeapons ) do
-        if value == inputWeapon then
-            table.remove( currentSelectionWeapons, I )
-        end
-    end
-end
-
-function loadoutFileCheck( loadoutList )
-    local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-    loadoutList:Clear()
-    for _, filename in pairs( files ) do
-        local name = string.Replace( filename, ".json", "" )
-        loadoutList:AddLine( name )
-    end
-end
-
-function loadoutFileCreate( fileName)
-    local jsonTable = util.TableToJSON( currentSelectionWeapons, true )
-    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
-
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
-end
-
-function loadoutFileDelete( loadoutName )
-    file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
-end
-
-function getLoadoutJsonTable( loadoutFileName )
-    local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
-    return util.JSONToTable( fileContent )
 end
 
 -- Console / Chat trigger
