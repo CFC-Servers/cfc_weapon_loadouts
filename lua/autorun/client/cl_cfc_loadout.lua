@@ -1,4 +1,4 @@
-local UICOLOR = Color( 36, 41, 67, 255 )
+--local UICOLOR = Color( 36, 41, 67, 255 )
 
 local weaponCategorised = {}
 local allWeapons = {}
