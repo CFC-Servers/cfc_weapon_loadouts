@@ -12,7 +12,7 @@ local loadoutListEditor
 
 file.CreateDir("cfc_loadout")
 
-hook.Add( "InitPostEntity", "Ready", function()
+hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function()
     net.Start( "CFC_Loadout_InitialSpawn" )
     net.SendToServer()
 end )
