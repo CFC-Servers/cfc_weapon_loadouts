@@ -27,7 +27,7 @@ net.Receive( "CFC_Loadout_Resetweapons", function( _, ply )
     ply.cfcLoadoutWeapons = nil
 end )
 
-hook.Add( "PlayerLoadout", "PlayerSpawnWeaponsLoadout", giveWeapons , HOOK_HIGH )
+hook.Add( "PlayerLoadout", "CFC_Loadout_GiveWeaponsOnSpawn", giveWeapons , HOOK_HIGH )
 
 net.Receive( "CFC_Loadout_InitialSpawn", function( _, ply )
     local restrictedTable = URS.restrictions["swep"]
