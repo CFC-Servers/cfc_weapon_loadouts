@@ -1,9 +1,7 @@
---local UICOLOR = Color( 36, 41, 67, 255 )
+--local UICOLOR = Color( 36, 41, 67, 255 )`
 
 local weaponCategorised = {}
 local allWeapons = {}
-local loadoutPreviewList
-local loadoutListEditor
 
 file.CreateDir("cfc_loadout")
 
@@ -69,28 +67,26 @@ local function createWeaponIconPreview( X, Y, ent, panel )
     weaponIcon.weaponClass = ent.ClassName
 end
 
-local function loadoutFileCheck( loadoutList )
-    local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-    loadoutList:Clear()
-    for _, filename in pairs( files ) do
-        local name = string.Replace( filename, ".json", "" )
-        loadoutList:AddLine( name )
+local function loadoutFileCheck( loadoutListTable )
+    PrintTable( loadoutListTable )
+    for _, loadoutList in pairs( loadoutListTable ) do
+        print( "test" )
+        local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
+        loadoutList:Clear()
+        for _, filename in pairs( files ) do
+            local name = string.Replace( filename, ".json", "" )
+            loadoutList:AddLine( name )
+        end
     end
 end
 
 local function loadoutFileCreate( fileName )
     file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
-
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
 end
 
 local function loadoutFileSave( fileName, weaponsList )
     local jsonTableSave = util.TableToJSON( weaponsList, true )
     file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTableSave )
-
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
 end
 
 local function getSelectedWeapons( shapeTable )
@@ -105,16 +101,10 @@ end
 
 local function loadoutFileRename( originalName, newName )
     file.Rename( "cfc_loadout/" .. originalName .. ".json", "cfc_loadout/" .. newName .. ".json" )
-
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
 end
 
 local function loadoutFileDelete( loadoutName )
     file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
-
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
 end
 
 local function getLoadoutJsonTable( loadoutFileName )
@@ -215,7 +205,7 @@ local function openLoadout()
     weaponLoadoutPreviewScroll:SetSize( ScrW() * 0.325, ScrH() * 0.5 )
     weaponLoadoutPreviewScroll:Hide()
 
-    loadoutPreviewList = vgui.Create ( "DListView" , panel1 )
+    local loadoutPreviewList = vgui.Create ( "DListView" , panel1 )
     loadoutPreviewList:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
     loadoutPreviewList:SetSize( ScrW() * 0.075, ScrH() * 0.4325 )
     loadoutPreviewList:SetMultiSelect( false )
@@ -282,7 +272,7 @@ local function openLoadout()
     -----------------------
     local weaponIcons = {}
 
-    loadoutListEditor = vgui.Create ( "DListView" , panel2 )
+    local loadoutListEditor = vgui.Create ( "DListView" , panel2 )
     loadoutListEditor:SetPos( ScrW() * 0.005, ScrH() * 0.01 )
     loadoutListEditor:SetSize( ScrW() * 0.075, ScrH() * 0.4 )
     loadoutListEditor:SetMultiSelect( false )
@@ -317,8 +307,9 @@ local function openLoadout()
         end
     end
 
-    loadoutFileCheck( loadoutPreviewList )
-    loadoutFileCheck( loadoutListEditor )
+    -- table of all dlists that need to be rechecked when a file is changed
+    local dlistFiles = { loadoutPreviewList, loadoutListEditor }
+    loadoutFileCheck( dlistFiles )
 
     function loadoutListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
@@ -345,6 +336,7 @@ local function openLoadout()
         confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
             local _, renameLine = loadoutListEditor:GetSelectedLine()
             loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
+            loadoutFileCheck( dlistFiles )
         end)
     end
 
@@ -355,6 +347,7 @@ local function openLoadout()
     newLoadoutButton.DoClick = function()
         confirmationPopup(  "New loadout", "Please enter a name for the new loadout.", true, function( textEntryValue )
             loadoutFileCreate( textEntryValue )
+            loadoutFileCheck( dlistFiles )
         end)
     end
 
@@ -369,6 +362,7 @@ local function openLoadout()
                     loadoutFileDelete( lineDel:GetValue( 1 ) )
                 end
             end
+            loadoutFileCheck( dlistFiles )
         end)
     end
 
