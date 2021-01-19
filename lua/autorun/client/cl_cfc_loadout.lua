@@ -2,11 +2,6 @@
 
 local weaponCategorised = {}
 local allWeapons = {}
-
-local window
-local scrollDock
-local panel1
-local panel2
 local loadoutPreviewList
 local loadoutListEditor
 
@@ -167,6 +162,13 @@ end
 -- Derma stuff
 
 local function openLoadout()
+    local window
+    if window then
+        window:Show()
+        window:MakePopup()
+        return
+    end
+
     -- Window init
     window = vgui.Create( "DFrame" )
     window:SetSize( 800, 600 )
@@ -188,11 +190,11 @@ local function openLoadout()
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
 
-    panel1 = vgui.Create( "DPanel", sheet )
+    local panel1 = vgui.Create( "DPanel", sheet )
     --panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Loadout selection", panel1, "icon16/star.png" )
 
-    panel2 = vgui.Create( "DPanel", sheet )
+    local panel2 = vgui.Create( "DPanel", sheet )
     --panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     sheet:AddSheet( "Loadout editor", panel2, "icon16/gun.png" )
 
@@ -370,7 +372,7 @@ local function openLoadout()
         end)
     end
 
-    scrollDock = vgui.Create( "DScrollPanel", panel2 )
+    local scrollDock = vgui.Create( "DScrollPanel", panel2 )
     scrollDock:SetPos( ScrW() * 0.0825, ScrH() * 0.01 )
     scrollDock:SetSize( ScrW() * 0.325, ScrH() * 0.49 )
 
