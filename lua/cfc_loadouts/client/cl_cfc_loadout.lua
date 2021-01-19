@@ -1,4 +1,4 @@
---local UICOLOR = Color( 36, 41, 67, 255 )`
+--local UICOLOR = Color( 36, 41, 67, 255 )
 
 local weaponCategorised = {}
 local allWeapons = {}
@@ -30,124 +30,6 @@ end )
         end
     end
 --end )
-
--- Functions
-
-local function createWeaponIcon ( X, Y, ent )
-    local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
-    weaponIcon:SetPos( X, Y )
-    weaponIcon:SetName( ent.PrintName or ent.ClassName )
-    weaponIcon:SetSpawnName( ent.ClassName )
-    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.weaponClass = ent.ClassName
-
-    weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
-    weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
-    weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
-    weaponIcon.selectionShape:SetSize( 120, 120 )
-    weaponIcon.selectionShape:Hide()
-    weaponIcon.DoClick = function()
-        if weaponIcon.selectionShape:IsVisible() then
-            weaponIcon.selectionShape:Hide()
-        else
-            weaponIcon.selectionShape:Show()
-        end
-    end
-
-    return weaponIcon
-end
-
-local function createWeaponIconPreview( X, Y, ent, panel )
-    local weaponIcon = vgui.Create( "ContentIcon", panel )
-    weaponIcon:SetPos( X, Y )
-    weaponIcon:SetName( ent.PrintName or ent.ClassName )
-    weaponIcon:SetSpawnName( ent.ClassName )
-    weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
-    weaponIcon.weaponClass = ent.ClassName
-end
-
-local function loadoutFileCheck( loadoutListTable )
-    PrintTable( loadoutListTable )
-    for _, loadoutList in pairs( loadoutListTable ) do
-        print( "test" )
-        local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-        loadoutList:Clear()
-        for _, filename in pairs( files ) do
-            local name = string.Replace( filename, ".json", "" )
-            loadoutList:AddLine( name )
-        end
-    end
-end
-
-local function loadoutFileCreate( fileName )
-    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
-end
-
-local function loadoutFileSave( fileName, weaponsList )
-    local jsonTableSave = util.TableToJSON( weaponsList, true )
-    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTableSave )
-end
-
-local function getSelectedWeapons( shapeTable )
-    local selectedWeapons = {}
-    for weaponName, shape in pairs( shapeTable ) do
-        if shape:IsVisible() then
-            table.insert( selectedWeapons, weaponName )
-        end
-    end
-    return selectedWeapons
-end
-
-local function loadoutFileRename( originalName, newName )
-    file.Rename( "cfc_loadout/" .. originalName .. ".json", "cfc_loadout/" .. newName .. ".json" )
-end
-
-local function loadoutFileDelete( loadoutName )
-    file.Delete( "cfc_loadout/" .. loadoutName .. ".json" )
-end
-
-local function getLoadoutJsonTable( loadoutFileName )
-    local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
-    return util.JSONToTable( fileContent )
-end
-
-local function confirmationPopup( windowName, labelText, shouldTextInput, callback )
-    local popupFrame = vgui.Create( "DFrame" )
-    popupFrame:SetSize( 300, 150 )
-    popupFrame:Center()
-    popupFrame:SetTitle( windowName )
-    popupFrame:SetVisible( true )
-    popupFrame:SetDraggable( false )
-    popupFrame:MakePopup()
-
-    local popupText = vgui.Create( "DLabel", popupFrame )
-    popupText:SetPos( popupFrame:GetWide() / ( #labelText * 0.15 ), 40 )
-    popupText:SetSize( 300, 10 )
-    popupText:SetText( labelText )
-
-    local popupEntry
-
-    if shouldTextInput then
-        popupEntry = vgui.Create( "DTextEntry", popupFrame )
-        popupEntry:SetPos( popupFrame:GetWide() * 0.18, 80 )
-        popupEntry:SetSize( 200, 20 )
-    end
-
-    local popupButton = vgui.Create( "DButton", popupFrame )
-    popupButton:SetText( "Confirm" )
-    popupButton:SetPos (popupFrame:GetWide() * 0.18, 120 )
-    popupButton:SetSize( 200, 20 )
-
-    popupButton.DoClick = function()
-        if shouldTextInput then
-            callback( popupEntry:GetValue() )
-        else
-            callback()
-        end
-        popupFrame:Close()
-    end
-end
 
 -- Derma stuff
 
@@ -214,7 +96,7 @@ local function openLoadout()
         weaponLoadoutPreview:Clear()
         weaponLoadoutPreviewScroll:Clear()
 
-        local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
+        local weaponTable = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
         local panelToUse
 
         if weaponTable == nil then return end
@@ -234,7 +116,7 @@ local function openLoadout()
                 local weapon = allWeapons[weaponString]
                 if weapon and lastWep ~= weapon then
                     lastWep = weapon
-                    createWeaponIconPreview( X, Y, weapon, panelToUse )
+                    CFCLoadouts.createWeaponIconPreview( X, Y, weapon, panelToUse )
 
                     X = X + 120
                     if X >= 600 then
@@ -251,7 +133,7 @@ local function openLoadout()
     loadoutSelectButton:SetText( "Select loadout" )
     loadoutSelectButton.DoClick = function()
         local _, line = loadoutPreviewList:GetSelectedLine()
-        local selectedWeapons = getLoadoutJsonTable( line:GetValue( 1 ) )
+        local selectedWeapons = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
 
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( selectedWeapons )
@@ -278,7 +160,7 @@ local function openLoadout()
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
     loadoutListEditor.OnRowSelected = function( _, _, line )
-        local weaponTable = getLoadoutJsonTable( line:GetValue( 1 ) )
+        local weaponTable = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
 
         if weaponTable == nil then
             for weaponString in pairs( weaponIcons ) do
@@ -309,11 +191,11 @@ local function openLoadout()
 
     -- table of all dlists that need to be rechecked when a file is changed
     local dlistFiles = { loadoutPreviewList, loadoutListEditor }
-    loadoutFileCheck( dlistFiles )
+    CFCLoadouts.loadoutFileCheck( dlistFiles )
 
     function loadoutListEditor:DoDoubleClick( _, line )
         local fileName = line:GetValue( 1 )
-        currentSelectionWeapons = getLoadoutJsonTable( fileName )
+        currentSelectionWeapons = CFCLoadouts.getLoadoutJsonTable( fileName )
     end
 
     local saveLoadoutButton = vgui.Create( "DButton", panel2 )
@@ -321,10 +203,10 @@ local function openLoadout()
     saveLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     saveLoadoutButton:SetText( "Save to selected" )
     saveLoadoutButton.DoClick = function()
-        confirmationPopup( "Save loadout", "Do you want to overwrite this loadout?", false, function()
-            local weaponsTable = getSelectedWeapons( weaponIcons )
+        CFCLoadouts.confirmationPopup( "Save loadout", "Do you want to overwrite this loadout?", false, function()
+            local weaponsTable = CFCLoadouts.getSelectedWeapons( weaponIcons )
             local _, saveLine = loadoutListEditor:GetSelectedLine()
-            loadoutFileSave( saveLine:GetValue( 1 ), weaponsTable )
+            CFCLoadouts.loadoutFileSave( saveLine:GetValue( 1 ), weaponsTable )
         end)
     end
 
@@ -333,10 +215,10 @@ local function openLoadout()
     renameLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     renameLoadoutButton:SetText( "Rename selected" )
     renameLoadoutButton.DoClick = function()
-        confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
+        CFCLoadouts.confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
             local _, renameLine = loadoutListEditor:GetSelectedLine()
-            loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
-            loadoutFileCheck( dlistFiles )
+            CFCLoadouts.loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
+            CFCLoadouts.loadoutFileCheck( dlistFiles )
         end)
     end
 
@@ -345,9 +227,9 @@ local function openLoadout()
     newLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     newLoadoutButton:SetText( "Create new" )
     newLoadoutButton.DoClick = function()
-        confirmationPopup(  "New loadout", "Please enter a name for the new loadout.", true, function( textEntryValue )
-            loadoutFileCreate( textEntryValue )
-            loadoutFileCheck( dlistFiles )
+        CFCLoadouts.confirmationPopup(  "New loadout", "Please enter a name for the new loadout.", true, function( textEntryValue )
+            CFCLoadouts.loadoutFileCreate( textEntryValue )
+            CFCLoadouts.loadoutFileCheck( dlistFiles )
         end)
     end
 
@@ -356,13 +238,13 @@ local function openLoadout()
     deleteLoadoutButton:SetSize( ScrW() * 0.075, ScrH() * 0.02 )
     deleteLoadoutButton:SetText( "Delete selected" )
     deleteLoadoutButton.DoClick = function()
-        confirmationPopup(  "Delete loadout", "Are you sure you want to delete the selected loadout?", false, function()
+        CFCLoadouts.confirmationPopup(  "Delete loadout", "Are you sure you want to delete the selected loadout?", false, function()
             for k, lineDel in pairs( loadoutListEditor.Lines ) do
                 if lineDel:IsLineSelected() then
-                    loadoutFileDelete( lineDel:GetValue( 1 ) )
+                    CFCLoadouts.loadoutFileDelete( lineDel:GetValue( 1 ) )
                 end
             end
-            loadoutFileCheck( dlistFiles )
+            CFCLoadouts.loadoutFileCheck( dlistFiles )
         end)
     end
 
@@ -384,7 +266,7 @@ local function openLoadout()
         --weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
-            weaponIcons[ent.ClassName] = createWeaponIcon( X, Y, ent ).selectionShape
+            weaponIcons[ent.ClassName] = CFCLoadouts.createWeaponIcon( X, Y, ent ).selectionShape
             X = X + 120
         if X >= 600 then
             X = 0
