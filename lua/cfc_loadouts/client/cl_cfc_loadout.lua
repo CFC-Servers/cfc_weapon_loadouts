@@ -33,7 +33,7 @@ end )
 
 -- Derma stuff
 
-local function openLoadout()
+function CFCLoadouts.openLoadout()
     local window
     if window then
         window:Show()
@@ -278,13 +278,13 @@ end
 
 -- Console / Chat trigger
 
-concommand.Add( "cfc_loadout", openLoadout )
+concommand.Add( "cfc_loadout", CFCLoadouts.openLoadout )
 
 hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
     if not string.StartWith( msg, "!loadout" ) then return end
 
     if ply == LocalPlayer() then
-        openLoadout()
+        CFCLoadouts.openLoadout()
     end
 
     return true
