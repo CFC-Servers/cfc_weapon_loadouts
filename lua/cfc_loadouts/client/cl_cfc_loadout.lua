@@ -10,26 +10,26 @@ hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function()
     net.SendToServer()
 end )
 
---net.Receive( "CFC_Loadout_SendRestrictions", function()
+net.Receive( "CFC_Loadout_SendRestrictions", function()
     allWeapons = list.Get( "Weapon" )
-    -- local group = LocalPlayer():GetUserGroup()
-    --local weaponTable = net.ReadTable()
+    local group = LocalPlayer():GetUserGroup()
+    local weaponTable = net.ReadTable()
 
     for _, weapon in pairs( allWeapons ) do
-        -- local weaponClass =  weapon.ClassName
-        -- local weaponPerms = weaponTable[ weaponClass ]
-        -- local isRestricted
+        local weaponClass =  weapon.ClassName
+        local weaponPerms = weaponTable[ weaponClass ]
+        local isRestricted
 
-        -- if istable( weaponPerms ) then
-        --     isRestricted = table.HasValue( weaponPerms, group )
-        -- end
+        if istable( weaponPerms ) then
+            isRestricted = table.HasValue( weaponPerms, group )
+        end
 
         if weapon.Spawnable and isRestricted ~= true then
             weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
             table.insert( weaponCategorised[ weapon.Category ], weapon )
         end
     end
---end )
+end )
 
 -- Derma stuff
 
