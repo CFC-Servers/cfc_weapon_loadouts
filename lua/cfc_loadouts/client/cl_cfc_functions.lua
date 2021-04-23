@@ -26,6 +26,18 @@ function CFCLoadouts.createWeaponIcon( X, Y, ent )
     return weaponIcon
 end
 
+function CFCLoadouts.paintButton( panel )
+    panel:SetTextColor( Color( 255, 255, 255 ) )
+
+    panel.Paint = function( self, w, h )
+        if self:IsDown( ) then
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 83, 227, 251, 255 ) )
+        else
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
+        end
+    end
+end
+
 function CFCLoadouts.createWeaponIconPreview( X, Y, ent, panel )
     local weaponIcon = vgui.Create( "ContentIcon", panel )
     weaponIcon:SetPos( X, Y )
@@ -47,8 +59,9 @@ function CFCLoadouts.loadoutFileCheck( loadoutListTable )
     end
 end
 
-function CFCLoadouts.loadoutFileCreate( fileName )
-    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTable )
+function CFCLoadouts.loadoutFileCreate( fileName, weaponsList )
+    local jsonTableSave = util.TableToJSON( weaponsList, true )
+    file.Write( "cfc_loadout/" .. fileName .. ".json", jsonTableSave )
 end
 
 function CFCLoadouts.loadoutFileSave( fileName, weaponsList )
@@ -106,6 +119,7 @@ function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, 
     popupButton:SetText( "Confirm" )
     popupButton:SetPos( popupFrame:GetWide( ) * 0.18, 120 )
     popupButton:SetSize( 200, 20 )
+    CFCLoadouts.paintButton( popupButton )
 
     popupButton.DoClick = function( )
         if shouldTextInput then
