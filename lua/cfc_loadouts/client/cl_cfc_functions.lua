@@ -1,26 +1,25 @@
 -- Functions
+CFCLoadouts = { }
 
-CFCLoadouts = {}
-
-function CFCLoadouts.createWeaponIcon ( X, Y, ent )
+function CFCLoadouts.createWeaponIcon( X, Y, ent )
     local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
     weaponIcon:SetPos( X, Y )
     weaponIcon:SetName( ent.PrintName or ent.ClassName )
     weaponIcon:SetSpawnName( ent.ClassName )
     weaponIcon:SetMaterial( "entities/" .. ent.ClassName .. ".png" )
     weaponIcon.weaponClass = ent.ClassName
-
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
     weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
-    weaponIcon.selectionShape:Hide()
-    weaponIcon.DoClick = function()
-        if weaponIcon.selectionShape:IsVisible() then
-            weaponIcon.selectionShape:Hide()
+    weaponIcon.selectionShape:Hide( )
+
+    weaponIcon.DoClick = function( )
+        if weaponIcon.selectionShape:IsVisible( ) then
+            weaponIcon.selectionShape:Hide( )
         else
-            weaponIcon.selectionShape:Show()
+            weaponIcon.selectionShape:Show( )
         end
     end
 
@@ -39,7 +38,8 @@ end
 function CFCLoadouts.loadoutFileCheck( loadoutListTable )
     for _, loadoutList in pairs( loadoutListTable ) do
         local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-        loadoutList:Clear()
+        loadoutList:Clear( )
+
         for _, filename in pairs( files ) do
             local name = string.Replace( filename, ".json", "" )
             loadoutList:AddLine( name )
@@ -57,12 +57,14 @@ function CFCLoadouts.loadoutFileSave( fileName, weaponsList )
 end
 
 function CFCLoadouts.getSelectedWeapons( shapeTable )
-    local selectedWeapons = {}
+    local selectedWeapons = { }
+
     for weaponName, shape in pairs( shapeTable ) do
-        if shape:IsVisible() then
+        if shape:IsVisible( ) then
             table.insert( selectedWeapons, weaponName )
         end
     end
+
     return selectedWeapons
 end
 
@@ -76,42 +78,42 @@ end
 
 function CFCLoadouts.getLoadoutJsonTable( loadoutFileName )
     local fileContent = file.Read( "cfc_loadout/" .. loadoutFileName .. ".json", "DATA" )
+
     return util.JSONToTable( fileContent )
 end
 
 function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, callback )
     local popupFrame = vgui.Create( "DFrame" )
     popupFrame:SetSize( 300, 150 )
-    popupFrame:Center()
+    popupFrame:Center( )
     popupFrame:SetTitle( windowName )
     popupFrame:SetVisible( true )
     popupFrame:SetDraggable( false )
-    popupFrame:MakePopup()
-
+    popupFrame:MakePopup( )
     local popupText = vgui.Create( "DLabel", popupFrame )
-    popupText:SetPos( popupFrame:GetWide() / ( #labelText * 0.15 ), 40 )
+    popupText:SetPos( popupFrame:GetWide( ) / ( #labelText * 0.15 ), 40 )
     popupText:SetSize( 300, 10 )
     popupText:SetText( labelText )
-
     local popupEntry
 
     if shouldTextInput then
         popupEntry = vgui.Create( "DTextEntry", popupFrame )
-        popupEntry:SetPos( popupFrame:GetWide() * 0.18, 80 )
+        popupEntry:SetPos( popupFrame:GetWide( ) * 0.18, 80 )
         popupEntry:SetSize( 200, 20 )
     end
 
     local popupButton = vgui.Create( "DButton", popupFrame )
     popupButton:SetText( "Confirm" )
-    popupButton:SetPos (popupFrame:GetWide() * 0.18, 120 )
+    popupButton:SetPos( popupFrame:GetWide( ) * 0.18, 120 )
     popupButton:SetSize( 200, 20 )
 
-    popupButton.DoClick = function()
+    popupButton.DoClick = function( )
         if shouldTextInput then
-            callback( popupEntry:GetValue() )
+            callback( popupEntry:GetValue( ) )
         else
-            callback()
+            callback( )
         end
-        popupFrame:Close()
+
+        popupFrame:Close( )
     end
 end
