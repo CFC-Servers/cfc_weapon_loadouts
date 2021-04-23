@@ -237,7 +237,7 @@ function CFCLoadouts.openLoadout( )
 
     deleteLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Delete loadout", "Are you sure you want to delete the selected loadout?", false, function( )
-            for k, lineDel in pairs( loadoutListEditor.Lines ) do
+            for _, lineDel in pairs( loadoutListEditor.Lines ) do
                 if lineDel:IsLineSelected( ) then
                     CFCLoadouts.loadoutFileDelete( lineDel:GetValue( 1 ) )
                 end
