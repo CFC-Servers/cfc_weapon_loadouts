@@ -14,7 +14,6 @@ function CFCLoadouts.createWeaponIcon( X, Y, ent )
     weaponIcon.selectionShape:SetColor( Color( 10, 10, 10, 240 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
 
-    --weaponIcon.selectionShape:Hide( )
     weaponIcon.DoClick = function( )
         if weaponIcon.selectionShape:IsVisible( ) then
             weaponIcon.selectionShape:Hide( )
