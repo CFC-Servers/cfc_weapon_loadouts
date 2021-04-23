@@ -47,21 +47,31 @@ function CFCLoadouts.openLoadout( )
     window:SetTitle( "CFC Loadout" )
     window:SetDeleteOnClose( false )
     window:MakePopup( )
-    -- window.Paint = function( self, w, h )
-    --     draw.RoundedBox( 8, 0, 0, w, h, UICOLOR )
-    -- end
+
+    window.Paint = function( _, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
+        draw.RoundedBox( 0, 0, 0, w, 25, Color( 42, 47, 74, 255 ) )
+    end
+
     -----------------------
     -- Sheet and Panels ---
     -----------------------
     local sheet = vgui.Create( "DPropertySheet", window )
-    --sheet.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
     local panel1 = vgui.Create( "DPanel", sheet )
-    --panel1.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+
+    panel1.Paint = function( _, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
+    end
+
     sheet:AddSheet( "Loadout selection", panel1, "icon16/star.png" )
     local panel2 = vgui.Create( "DPanel", sheet )
-    --panel2.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+
+    panel2.Paint = function( _, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
+    end
+
     sheet:AddSheet( "Loadout editor", panel2, "icon16/gun.png" )
     --panel3 = vgui.Create( "DPanel", sheet )
     --panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
@@ -81,6 +91,10 @@ function CFCLoadouts.openLoadout( )
     loadoutPreviewList:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.4325 )
     loadoutPreviewList:SetMultiSelect( false )
     loadoutPreviewList:AddColumn( "Loadouts" )
+
+    loadoutPreviewList.Paint = function( _, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
+    end
 
     loadoutPreviewList.OnRowSelected = function( _, _, line )
         weaponLoadoutPreview:Clear( )
@@ -121,10 +135,11 @@ function CFCLoadouts.openLoadout( )
     loadoutSelectButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.445 )
     loadoutSelectButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.025 )
     loadoutSelectButton:SetText( "Select loadout" )
+    CFCLoadouts.paintButton( loadoutSelectButton )
 
     loadoutSelectButton.DoClick = function( )
         local _, line = loadoutPreviewList:GetSelectedLine( )
-        if line == nil then return end
+        --if line == nil then return end
         local selectedWeapons = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( selectedWeapons )
@@ -135,6 +150,7 @@ function CFCLoadouts.openLoadout( )
     resetSelectButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.4725 )
     resetSelectButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.025 )
     resetSelectButton:SetText( "Select default loadout" )
+    CFCLoadouts.paintButton( resetSelectButton )
 
     resetSelectButton.DoClick = function( )
         net.Start( "CFC_Loadout_Resetweapons" )
@@ -197,6 +213,7 @@ function CFCLoadouts.openLoadout( )
     saveLoadoutButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.4125 )
     saveLoadoutButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.02 )
     saveLoadoutButton:SetText( "Save to selected" )
+    CFCLoadouts.paintButton( saveLoadoutButton )
 
     saveLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Save loadout", "Do you want to overwrite this loadout?", false, function( )
@@ -210,6 +227,7 @@ function CFCLoadouts.openLoadout( )
     renameLoadoutButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.435 )
     renameLoadoutButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.02 )
     renameLoadoutButton:SetText( "Rename selected" )
+    CFCLoadouts.paintButton( renameLoadoutButton )
 
     renameLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
@@ -223,10 +241,12 @@ function CFCLoadouts.openLoadout( )
     newLoadoutButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.4575 )
     newLoadoutButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.02 )
     newLoadoutButton:SetText( "Create new" )
+    CFCLoadouts.paintButton( newLoadoutButton )
 
     newLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "New loadout", "Please enter a name for the new loadout.", true, function( textEntryValue )
-            CFCLoadouts.loadoutFileCreate( textEntryValue )
+            local weaponsTable = CFCLoadouts.getSelectedWeapons( weaponIcons )
+            CFCLoadouts.loadoutFileCreate( textEntryValue, weaponsTable )
             CFCLoadouts.loadoutFileCheck( dlistFiles )
         end )
     end
@@ -235,6 +255,7 @@ function CFCLoadouts.openLoadout( )
     deleteLoadoutButton:SetPos( ScrW( ) * 0.005, ScrH( ) * 0.48 )
     deleteLoadoutButton:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.02 )
     deleteLoadoutButton:SetText( "Delete selected" )
+    CFCLoadouts.paintButton( deleteLoadoutButton )
 
     deleteLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Delete loadout", "Are you sure you want to delete the selected loadout?", false, function( )
