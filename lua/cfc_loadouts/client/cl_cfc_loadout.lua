@@ -49,8 +49,8 @@ function CFCLoadouts.openLoadout( )
     window:MakePopup( )
 
     window.Paint = function( _, w, h )
-        draw.RoundedBox( 0, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
-        draw.RoundedBox( 0, 0, 0, w, 25, Color( 42, 47, 74, 255 ) )
+        draw.RoundedBox( 8, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
+        draw.RoundedBox( 8, 0, 0, w, 25, Color( 42, 47, 74, 255 ) )
     end
 
     -----------------------
@@ -82,6 +82,11 @@ function CFCLoadouts.openLoadout( )
     local weaponLoadoutPreview = vgui.Create( "DPanel", panel1 )
     weaponLoadoutPreview:SetPos( ScrW( ) * 0.0825, ScrH( ) * 0.01 )
     weaponLoadoutPreview:SetSize( ScrW( ) * 0.3225, ScrH( ) * 0.4875 )
+
+    weaponLoadoutPreview.Paint = function( _, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
+    end
+
     local weaponLoadoutPreviewScroll = vgui.Create( "DScrollPanel", panel1 )
     weaponLoadoutPreviewScroll:SetPos( ScrW( ) * 0.0825, ScrH( ) * 0.01 )
     weaponLoadoutPreviewScroll:SetSize( ScrW( ) * 0.325, ScrH( ) * 0.5 )
@@ -91,10 +96,6 @@ function CFCLoadouts.openLoadout( )
     loadoutPreviewList:SetSize( ScrW( ) * 0.075, ScrH( ) * 0.4325 )
     loadoutPreviewList:SetMultiSelect( false )
     loadoutPreviewList:AddColumn( "Loadouts" )
-
-    loadoutPreviewList.Paint = function( _, w, h )
-        draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
-    end
 
     loadoutPreviewList.OnRowSelected = function( _, _, line )
         weaponLoadoutPreview:Clear( )
@@ -139,7 +140,7 @@ function CFCLoadouts.openLoadout( )
 
     loadoutSelectButton.DoClick = function( )
         local _, line = loadoutPreviewList:GetSelectedLine( )
-        --if line == nil then return end
+        if line == nil then return end
         local selectedWeapons = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( selectedWeapons )
