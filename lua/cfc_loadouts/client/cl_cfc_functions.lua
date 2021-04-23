@@ -30,10 +30,14 @@ function CFCLoadouts.paintButton( panel )
     panel:SetTextColor( Color( 255, 255, 255 ) )
 
     panel.Paint = function( self, w, h )
+        draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
+
         if self:IsDown( ) then
-            draw.RoundedBox( 0, 0, 0, w, h, Color( 83, 227, 251, 255 ) )
+            draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 83, 227, 251, 255 ) )
+        elseif self:IsHovered( ) then
+            draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 35, 42, 69, 255 ) )
         else
-            draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
+            draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 42, 47, 74, 255 ) )
         end
     end
 end
@@ -103,9 +107,15 @@ function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, 
     popupFrame:SetVisible( true )
     popupFrame:SetDraggable( false )
     popupFrame:MakePopup( )
+
+    popupFrame.Paint = function( _, w, h )
+        draw.RoundedBox( 8, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
+        draw.RoundedBox( 8, 0, 0, w, 25, Color( 42, 47, 74, 255 ) )
+    end
+
     local popupText = vgui.Create( "DLabel", popupFrame )
     popupText:SetPos( popupFrame:GetWide( ) / ( #labelText * 0.15 ), 40 )
-    popupText:SetSize( 300, 10 )
+    popupText:SetSize( 300, 15 )
     popupText:SetText( labelText )
     local popupEntry
 
