@@ -2,12 +2,12 @@
 local weaponCategorised = { }
 local allWeapons = { }
 file.CreateDir( "cfc_loadout" )
+--WIPd
+--hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function( )
+net.Start( "CFC_Loadout_InitialSpawn" )
+net.SendToServer( )
 
-hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function( )
-    net.Start( "CFC_Loadout_InitialSpawn" )
-    net.SendToServer( )
-end )
-
+--end )
 net.Receive( "CFC_Loadout_SendRestrictions", function( )
     allWeapons = list.Get( "Weapon" )
     local group = LocalPlayer( ):GetUserGroup( )
@@ -192,7 +192,7 @@ function CFCLoadouts.openLoadout( )
         for weaponString in pairs( weaponIcons ) do
             local icon = weaponIcons[ weaponString ]
 
-            if weaponTable[ weaponString ] then
+            if not weaponTable[ weaponString ] then
                 icon:Show( )
             else
                 icon:Hide( )
@@ -220,6 +220,7 @@ function CFCLoadouts.openLoadout( )
         CFCLoadouts.confirmationPopup( "Save loadout", "Do you want to overwrite this loadout?", false, function( )
             local weaponsTable = CFCLoadouts.getSelectedWeapons( weaponIcons )
             local _, saveLine = loadoutListEditor:GetSelectedLine( )
+            if saveLine == nil then return end
             CFCLoadouts.loadoutFileSave( saveLine:GetValue( 1 ), weaponsTable )
         end )
     end
@@ -233,6 +234,7 @@ function CFCLoadouts.openLoadout( )
     renameLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
             local _, renameLine = loadoutListEditor:GetSelectedLine( )
+            if saveLine == nil then return end
             CFCLoadouts.loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
             CFCLoadouts.loadoutFileCheck( dlistFiles )
         end )
