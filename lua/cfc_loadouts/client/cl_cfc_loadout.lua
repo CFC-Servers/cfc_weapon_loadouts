@@ -60,19 +60,35 @@ function CFCLoadouts.openLoadout( )
     sheet:SetPadding( 0 )
     sheet:Dock( FILL )
     local panel1 = vgui.Create( "DPanel", sheet )
+    local panel1sheet = sheet:AddSheet( "Loadout selection", panel1, "icon16/star.png" )
 
     panel1.Paint = function( _, w, h )
         draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
     end
 
-    sheet:AddSheet( "Loadout selection", panel1, "icon16/star.png" )
+    panel1sheet.Tab.Paint = function( self, w, h )
+        if sheet:GetActiveTab( ) == self then
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
+        else
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 48, 93, 255 ) )
+        end
+    end
+
     local panel2 = vgui.Create( "DPanel", sheet )
+    local panel2sheet = sheet:AddSheet( "Loadout editor", panel2, "icon16/gun.png" )
 
     panel2.Paint = function( _, w, h )
         draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
     end
 
-    sheet:AddSheet( "Loadout editor", panel2, "icon16/gun.png" )
+    panel2sheet.Tab.Paint = function( self, w, h )
+        if sheet:GetActiveTab( ) == self then
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 50, 58, 103, 255 ) )
+        else
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 48, 93, 255 ) )
+        end
+    end
+
     --panel3 = vgui.Create( "DPanel", sheet )
     --panel3.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
     --sheet:AddSheet( "Weapon selection", panel3, "icon16/gun.png" )
@@ -276,8 +292,7 @@ function CFCLoadouts.openLoadout( )
     scrollDock:SetPos( ScrW( ) * 0.0825, ScrH( ) * 0.01 )
     scrollDock:SetSize( ScrW( ) * 0.325, ScrH( ) * 0.49 )
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
-    --weaponCats.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 41, 48, 86, 255 ) ) end
-    weaponCats:SetSize( ScrW( ) * 0.315, ScrH( ) * 0.4875 )
+    weaponCats:SetSize( ScrW( ) * 0.317, ScrH( ) * 0.4875 )
 
     for catName, v in SortedPairs( weaponCategorised ) do
         local X = 0
@@ -286,7 +301,18 @@ function CFCLoadouts.openLoadout( )
         weaponCatPanel:SetLabel( catName )
         weaponCatPanel:SetExpanded( false )
 
-        --weaponCatPanel.Paint = function( self, w, h ) draw.RoundedBox( 8, 0, 0, w, h, Color( 50, 58, 103, 255 ) ) end
+        weaponCatPanel.Paint = function( self, w, h )
+            draw.RoundedBox( 0, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
+
+            if self:IsHovered( ) then
+                draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 35, 42, 69, 255 ) )
+            else
+                draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 42, 47, 74, 255 ) )
+            end
+
+            draw.RoundedBox( 0, 1, 1, w - 2, 18, Color( 52, 57, 84, 255 ) )
+        end
+
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
             weaponIcons[ ent.ClassName ] = CFCLoadouts.createWeaponIcon( X, Y, ent ).selectionShape
             X = X + 120
