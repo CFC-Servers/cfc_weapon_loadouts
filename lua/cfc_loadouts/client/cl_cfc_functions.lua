@@ -11,7 +11,7 @@ function CFCLoadouts.createWeaponIcon( X, Y, ent )
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color( 255, 0, 255, 200 ) )
+    weaponIcon.selectionShape:SetColor( Color( 83, 227, 251, 200 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
     weaponIcon.selectionShape:Hide( )
 

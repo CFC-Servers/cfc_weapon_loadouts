@@ -124,6 +124,7 @@ function CFCLoadouts.openLoadout( )
 
     loadoutSelectButton.DoClick = function( )
         local _, line = loadoutPreviewList:GetSelectedLine( )
+        if line == nil then return end
         local selectedWeapons = CFCLoadouts.getLoadoutJsonTable( line:GetValue( 1 ) )
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( selectedWeapons )
