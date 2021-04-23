@@ -33,7 +33,7 @@ end )
 hook.Add( "PlayerLoadout", "CFC_Loadout_GiveWeaponsOnSpawn", giveWeapons, HOOK_HIGH )
 
 net.Receive( "CFC_Loadout_InitialSpawn", function( _, ply )
-    local restrictedTable = URS.restrictions[ "swep" ]
+    local restrictedTable = URS.restrictions.swep
     net.Start( "CFC_Loadout_SendRestrictions" )
     net.WriteTable( restrictedTable )
     net.Send( ply )
