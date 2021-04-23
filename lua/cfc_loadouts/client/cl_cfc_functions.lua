@@ -11,10 +11,10 @@ function CFCLoadouts.createWeaponIcon( X, Y, ent )
     weaponIcon.selectionShape = vgui.Create( "DShape", weaponIcon )
     weaponIcon.selectionShape:SetType( "Rect" ) -- This is the only type it can be
     weaponIcon.selectionShape:SetPos( 5, 5 )
-    weaponIcon.selectionShape:SetColor( Color( 83, 227, 251, 200 ) )
+    weaponIcon.selectionShape:SetColor( Color( 10, 10, 10, 240 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
-    weaponIcon.selectionShape:Hide( )
 
+    --weaponIcon.selectionShape:Hide( )
     weaponIcon.DoClick = function( )
         if weaponIcon.selectionShape:IsVisible( ) then
             weaponIcon.selectionShape:Hide( )
@@ -77,7 +77,7 @@ function CFCLoadouts.getSelectedWeapons( shapeTable )
     local selectedWeapons = { }
 
     for weaponName, shape in pairs( shapeTable ) do
-        if shape:IsVisible( ) then
+        if not shape:IsVisible( ) then
             table.insert( selectedWeapons, weaponName )
         end
     end
