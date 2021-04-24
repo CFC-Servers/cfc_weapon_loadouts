@@ -115,7 +115,6 @@ function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, 
     local popupText = vgui.Create( "DLabel", popupFrame )
     popupText:SetText( labelText )
     local textWidth = popupText:GetTextSize( )
-    print( textWidth )
     popupText:SetPos( ( popupFrame:GetWide( ) / 2 ) - ( textWidth / 2 ), 40 )
     popupText:SetSize( 300, 15 )
     local popupEntry
