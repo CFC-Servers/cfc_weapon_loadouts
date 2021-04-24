@@ -1,12 +1,12 @@
 local weaponCategorised = { }
 local allWeapons = { }
 file.CreateDir( "cfc_loadout" )
---WIPd
---hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function( )
-net.Start( "CFC_Loadout_InitialSpawn" )
-net.SendToServer( )
 
---end )
+hook.Add( "InitPostEntity", "CFC_Loadouts_ReadyClientCheck", function( )
+    net.Start( "CFC_Loadout_InitialSpawn" )
+    net.SendToServer( )
+end )
+
 net.Receive( "CFC_Loadout_SendRestrictions", function( )
     allWeapons = list.Get( "Weapon" )
     local group = LocalPlayer( ):GetUserGroup( )
