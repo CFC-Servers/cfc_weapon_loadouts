@@ -249,7 +249,7 @@ function CFCLoadouts.openLoadout( )
     renameLoadoutButton.DoClick = function( )
         CFCLoadouts.confirmationPopup( "Rename loadout", "Please enter a new name for the loadout.", true, function( textEntryValue )
             local _, renameLine = loadoutListEditor:GetSelectedLine( )
-            if saveLine == nil then return end
+            if renameLine == nil then return end
             CFCLoadouts.loadoutFileRename( renameLine:GetValue( 1 ), textEntryValue )
             CFCLoadouts.loadoutFileCheck( dlistFiles )
         end )
