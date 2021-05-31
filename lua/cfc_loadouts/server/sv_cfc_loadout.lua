@@ -8,6 +8,11 @@ local function giveWeapons( ply )
 
     for _, weapon in pairs( ply.cfcLoadoutWeapons ) do
         local canSpawn = URS.Check( ply, "swep", weapon )
+        local weaponTable = weapons.Get( weapon )
+
+        if weaponTable and not ply:IsAdmin() then
+            canSpawn = not weaponTable.AdminOnly
+        end
 
         if canSpawn ~= false then
             ply:Give( weapon )
