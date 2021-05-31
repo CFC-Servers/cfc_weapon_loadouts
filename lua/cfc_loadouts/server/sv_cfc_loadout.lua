@@ -7,11 +7,13 @@ local function giveWeapons( ply )
     if ply.cfcLoadoutWeapons == nil then return end
 
     for _, weapon in pairs( ply.cfcLoadoutWeapons ) do
-        --local canSpawn = hook.Run( "PlayerGiveSWEP", ply, weapon )
         local canSpawn = URS.Check( ply, "swep", weapon )
 
         if canSpawn ~= false then
             ply:Give( weapon )
+            local weaponEnt = ply:GetWeapon( weapon )
+            local ammoType = weaponEnt:GetPrimaryAmmoType()
+            ply:SetAmmo( 1000, ammoType )
         end
     end
 
