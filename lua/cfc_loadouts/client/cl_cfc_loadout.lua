@@ -107,8 +107,8 @@ function CFCLoadouts.openLoadout()
     weaponLoadoutPreviewScroll:SetSize( 624, 540 )
     weaponLoadoutPreviewScroll:Hide()
     local loadoutPreviewList = vgui.Create( "DListView", panel1 )
-    loadoutPreviewList:SetPos( 9.6,	10.8 )
-    loadoutPreviewList:SetSize( 144,	467.1 )
+    loadoutPreviewList:SetPos( 9.6, 10.8 )
+    loadoutPreviewList:SetSize( 144, 467.1 )
     loadoutPreviewList:SetMultiSelect( false )
     loadoutPreviewList:AddColumn( "Loadouts" )
 
@@ -164,7 +164,7 @@ function CFCLoadouts.openLoadout()
 
     local resetSelectButton = vgui.Create( "DButton", panel1 )
     resetSelectButton:SetPos( 9.6, 510.3 )
-    resetSelectButton:SetSize( 144,	27 )
+    resetSelectButton:SetSize( 144, 27 )
     resetSelectButton:SetText( "Select default loadout" )
     CFCLoadouts.paintButton( resetSelectButton )
 
@@ -179,7 +179,7 @@ function CFCLoadouts.openLoadout()
     local weaponIcons = { }
     local loadoutListEditor = vgui.Create( "DListView", panel2 )
     loadoutListEditor:SetPos( 9.6, 10.8 )
-    loadoutListEditor:SetSize( 144,	432 )
+    loadoutListEditor:SetSize( 144, 432 )
     loadoutListEditor:SetMultiSelect( false )
     loadoutListEditor:AddColumn( "Saved Loadouts" )
 
@@ -227,7 +227,7 @@ function CFCLoadouts.openLoadout()
 
     local saveLoadoutButton = vgui.Create( "DButton", panel2 )
     saveLoadoutButton:SetPos( 9.6, 445.5 )
-    saveLoadoutButton:SetSize( 144,	21.6 )
+    saveLoadoutButton:SetSize( 144, 21.6 )
     saveLoadoutButton:SetText( "Save to selected" )
     CFCLoadouts.paintButton( saveLoadoutButton )
 
@@ -291,7 +291,7 @@ function CFCLoadouts.openLoadout()
     scrollDock:SetPos( 158.4, 10.8 )
     scrollDock:SetSize( 624, 529.2 )
     local weaponCats = vgui.Create( "DListLayout", scrollDock )
-    weaponCats:SetSize( 608.64,	526.5 )
+    weaponCats:SetSize( 608.64, 526.5 )
 
     for catName, v in SortedPairs( weaponCategorised ) do
         local X = 0
