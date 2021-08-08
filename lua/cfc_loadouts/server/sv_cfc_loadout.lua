@@ -3,6 +3,17 @@ util.AddNetworkString( "CFC_Loadout_Resetweapons" )
 util.AddNetworkString( "CFC_Loadout_InitialSpawn" )
 util.AddNetworkString( "CFC_Loadout_SendRestrictions" )
 
+-- Hardcoded ammo id's to improve peformance, https://wiki.facepunch.com/gmod/Default_Ammo_Types
+local weaponAmmoCounts = {
+    [1] = 500, -- weapon_ar2 primary
+    [2] = 10, -- weapon_ar2 altfire
+    [3] = 100, -- weapon_pistol
+    [4] = 500, -- weapon_smg1 primary
+    [5] = 200, -- weapon_357
+    [6] = 100, -- weapon_crossbow
+    [7] = 100, -- weapon_shotgun
+}
+
 local function giveWeapons( ply )
     if ply.cfcLoadoutWeapons == nil then return end
 
@@ -17,6 +28,10 @@ local function giveWeapons( ply )
         if canSpawn ~= false then
             ply:Give( weapon )
         end
+    end
+
+    for k, v in ipairs( weaponAmmoCounts ) do
+        ply:SetAmmo( v, k )
     end
 
     return true
