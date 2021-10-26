@@ -108,6 +108,7 @@ function CFCLoadouts.openLoadout()
     weaponLoadoutPreviewScroll:SetPos( 158.4 * uiScale, 10.8 * uiScale )
     weaponLoadoutPreviewScroll:SetSize( 624 * uiScale, 540 * uiScale )
     weaponLoadoutPreviewScroll:Hide()
+
     local loadoutPreviewList = vgui.Create( "DListView", panel1 )
     loadoutPreviewList:SetPos( 9.6 * uiScale, 10.8 * uiScale )
     loadoutPreviewList:SetSize( 144 * uiScale, 467.1 * uiScale )
@@ -162,17 +163,21 @@ function CFCLoadouts.openLoadout()
         net.Start( "CFC_Loadout_WeaponTable" )
         net.WriteTable( selectedWeapons )
         net.SendToServer()
+
+        EmitSound( Sound( "Weapon_357.Reload" ), LocalPlayer():GetPos(), 1, CHAN_AUTO, 1, 75, 0, 100 )
     end
 
     local resetSelectButton = vgui.Create( "DButton", panel1 )
     resetSelectButton:SetPos( 9.6 * uiScale, 510.3 * uiScale )
     resetSelectButton:SetSize( 144 * uiScale, 27 * uiScale )
-    resetSelectButton:SetText( "Select default loadout" )
+    resetSelectButton:SetText( "Reset to default" )
     CFCLoadouts.paintButton( resetSelectButton )
 
     resetSelectButton.DoClick = function()
         net.Start( "CFC_Loadout_Resetweapons" )
         net.SendToServer()
+
+        EmitSound( Sound( "Weapon_357.OpenLoader" ), LocalPlayer():GetPos(), 1, CHAN_AUTO, 1, 75, 0, 100 )
     end
 
     -----------------------
@@ -338,3 +343,12 @@ hook.Add( "OnPlayerChat", "CFC_Loadout_OpenLoadoutCommand", function( ply, msg )
 
     return true
 end )
+
+-- Context Menu Widget trigger
+list.Set( "DesktopWindows", "cfc_loadouts", {
+    title = "CFC Loadouts Menu",
+    icon = "icon64/gun.png",
+    init = function( icon, window )
+        CFCLoadouts.openLoadout()
+    end
+} )
