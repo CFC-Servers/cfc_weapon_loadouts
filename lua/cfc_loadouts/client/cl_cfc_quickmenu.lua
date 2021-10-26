@@ -19,6 +19,7 @@ function onCMenuOpen()
     parentPanel:SetDraggable( false )
     parentPanel:ShowCloseButton( false )
     parentPanel:SetTitle( "" )
+
     function parentPanel:Paint( w2, h2 )
         draw.RoundedBox( 8, 0, h - ( h / 1.29 ), w2, h2, Color( 42, 47, 74, 255 ) )
     end
@@ -46,6 +47,18 @@ function onCMenuOpen()
     loadoutPreviewList:AddColumn( "Loadouts" )
 
     CFCLoadouts.loadoutFileCheck( { loadoutPreviewList } )
+
+    local loadoutResetButton = vgui.Create( "DButton", parentPanel )
+    loadoutResetButton:Dock( BOTTOM )
+    loadoutResetButton:SetText( "Reset to default")
+    CFCLoadouts.paintButton( loadoutResetButton )
+
+    loadoutResetButton.DoClick = function()
+        net.Start( "CFC_Loadout_Resetweapons" )
+        net.SendToServer()
+
+        EmitSound( Sound( "Weapon_357.OpenLoader" ), LocalPlayer():GetPos(), 1, CHAN_AUTO, 1, 75, 0, 100 )
+    end
 
     local loadoutSelectButton = vgui.Create( "DButton", parentPanel )
     loadoutSelectButton:Dock( BOTTOM )
