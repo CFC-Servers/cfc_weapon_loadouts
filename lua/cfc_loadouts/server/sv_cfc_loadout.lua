@@ -21,8 +21,8 @@ local function giveWeapons( ply )
         local canSpawn = URS.Check( ply, "swep", weapon )
         local weaponTable = weapons.Get( weapon )
 
-        if weaponTable and not ply:IsAdmin() then
-            canSpawn = not weaponTable.AdminOnly
+        if weaponTable and weaponTable.AdminOnly and not ply:IsAdmin() and canSpawn then
+            canSpawn = false
         end
 
         if canSpawn ~= false then
