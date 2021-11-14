@@ -347,7 +347,7 @@ end )
 -- Context Menu Widget trigger
 list.Set( "DesktopWindows", "cfc_loadouts", {
     title = "CFC Loadouts",
-    icon = "icon64/gun.png",
+    icon = "cfc_loadouts/icons/cfc_loadouts_widget_icon.png",
     init = function( icon, window )
         CFCLoadouts.openLoadout()
     end
