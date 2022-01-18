@@ -177,7 +177,7 @@ function CFCLoadouts.openLoadout()
         net.Start( "CFC_Loadout_Resetweapons" )
         net.SendToServer()
 
-        EmitSound( Sound( "Weapon_357.OpenLoader" ), LocalPlayer():GetPos(), 1, CHAN_AUTO, 1, 75, 0, 100 )
+        surface.PlaySound( Sound( "Weapon_357.OpenLoader" ) )
     end
 
     -----------------------
