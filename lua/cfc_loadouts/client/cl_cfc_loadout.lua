@@ -164,7 +164,7 @@ function CFCLoadouts.openLoadout()
         net.WriteTable( selectedWeapons )
         net.SendToServer()
 
-        EmitSound( Sound( "Weapon_357.Reload" ), LocalPlayer():GetPos(), 1, CHAN_AUTO, 1, 75, 0, 100 )
+        surface.PlaySound( "weapons/357_reload1.wav" )
     end
 
     local resetSelectButton = vgui.Create( "DButton", panel1 )
@@ -177,7 +177,7 @@ function CFCLoadouts.openLoadout()
         net.Start( "CFC_Loadout_Resetweapons" )
         net.SendToServer()
 
-        surface.PlaySound( Sound( "Weapon_357.OpenLoader" ) )
+        surface.PlaySound( ")weapons/357/357_reload1.wav" )
     end
 
     -----------------------

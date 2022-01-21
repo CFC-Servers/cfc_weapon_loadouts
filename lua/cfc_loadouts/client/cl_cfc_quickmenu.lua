@@ -57,7 +57,7 @@ function onCMenuOpen()
         net.Start( "CFC_Loadout_Resetweapons" )
         net.SendToServer()
 
-        surface.PlaySound( Sound( "Weapon_357.OpenLoader" ) )
+        surface.PlaySound( ")weapons/357/357_reload1.wav" )
     end
 
     local loadoutSelectButton = vgui.Create( "DButton", parentPanel )
