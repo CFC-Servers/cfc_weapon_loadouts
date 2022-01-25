@@ -81,7 +81,7 @@ hook.Add( "ContextMenuOpened", "CFC_Loadout_CMenuOpen", onCMenuOpen )
 
 function onCMenuClose()
     menuOpened = false
-
+    if not IsValid( parentPanel ) then return end
     parentPanel:Close()
 end
 
