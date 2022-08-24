@@ -49,6 +49,10 @@ net.Receive( "CFC_Loadout_Resetweapons", function( _, ply )
     ply:ChatPrint( "[CFC Loadouts] Success - Your loadout was reset!")
 end )
 
+hook.Add( "CFC_PvP_ShouldGiveLoadout", "CFC_Loadouts", function( ply )
+    if ply.cfcLoadoutWeapons then return false end
+end )
+
 hook.Add( "PlayerLoadout", "CFC_Loadout_GiveWeaponsOnSpawn", giveWeapons, HOOK_HIGH )
 
 net.Receive( "CFC_Loadout_InitialSpawn", function( _, ply )
