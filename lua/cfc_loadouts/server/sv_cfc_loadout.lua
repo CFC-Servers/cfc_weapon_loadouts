@@ -35,6 +35,7 @@ local function giveWeapons( ply )
     end
 
     ply:Give( "weapon_physgun" )
+    ply:SetActiveWeapon( "weapon_physgun" )
 
     return true
 end
