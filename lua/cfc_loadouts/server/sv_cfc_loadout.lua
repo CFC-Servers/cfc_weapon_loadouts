@@ -41,15 +41,15 @@ local function giveWeapons( ply )
 end
 
 net.Receive( "CFC_Loadout_WeaponTable", function( _, ply )
-    local weaponTable = net.ReadTable( )
+    local weaponTable = net.ReadTable()
     ply.cfcLoadoutWeapons = weaponTable
 
-    ply:ChatPrint( "[CFC Loadouts] Success - Your loadout will be applied upon respawning!")
+    ply:ChatPrint( "[CFC Loadouts] Success - Your loadout will be applied upon respawning!" )
 end )
 
 net.Receive( "CFC_Loadout_Resetweapons", function( _, ply )
     ply.cfcLoadoutWeapons = nil
-    ply:ChatPrint( "[CFC Loadouts] Success - Your loadout was reset!")
+    ply:ChatPrint( "[CFC Loadouts] Success - Your loadout was reset!" )
 end )
 
 hook.Add( "CFC_PvP_ShouldGiveLoadout", "CFC_Loadouts", function( ply )

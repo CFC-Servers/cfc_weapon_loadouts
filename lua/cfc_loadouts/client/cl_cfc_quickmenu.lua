@@ -31,12 +31,12 @@ function onCMenuOpen()
     popUpButton:SetMouseInputEnabled( true )
     popUpButton:SetTextColor( Color( 255, 255, 255 ) )
 
-    function popUpButton:Paint( w, h )
+    function popUpButton:Paint()
         draw.RoundedBox( 0, 0, 0, w, h, Color( 42, 47, 74, 255 ) )
     end
 
     function popUpButton:DoClick()
-        parentPanel:MoveTo( ScrW() / 2 - ( w / 2 ), ScrH() - ( extendMenu and h / 4 or h ) + 5, 0.5, 0.1)
+        parentPanel:MoveTo( ScrW() / 2 - ( w / 2 ), ScrH() - ( extendMenu and h / 4 or h ) + 5, 0.5, 0.1 )
         self:SetText( extendMenu and "^" or "v" )
         extendMenu = not extendMenu
     end
@@ -50,7 +50,7 @@ function onCMenuOpen()
 
     local loadoutResetButton = vgui.Create( "DButton", parentPanel )
     loadoutResetButton:Dock( BOTTOM )
-    loadoutResetButton:SetText( "Reset to default")
+    loadoutResetButton:SetText( "Reset to default" )
     CFCLoadouts.paintButton( loadoutResetButton )
 
     loadoutResetButton.DoClick = function()
@@ -62,7 +62,7 @@ function onCMenuOpen()
 
     local loadoutSelectButton = vgui.Create( "DButton", parentPanel )
     loadoutSelectButton:Dock( BOTTOM )
-    loadoutSelectButton:SetText( "Select Loadout")
+    loadoutSelectButton:SetText( "Select Loadout" )
     CFCLoadouts.paintButton( loadoutSelectButton )
 
     loadoutSelectButton.DoClick = function()

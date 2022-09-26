@@ -1,5 +1,5 @@
-local weaponCategorised = { }
-local allWeapons = { }
+local weaponCategorised = {}
+local allWeapons = {}
 file.CreateDir( "cfc_loadout" )
 
 local uiScale = ScrH() / 1080
@@ -24,7 +24,7 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
         end
 
         if weapon.Spawnable and isRestricted ~= true then
-            weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or { }
+            weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
             table.insert( weaponCategorised[ weapon.Category ], weapon )
         end
     end
@@ -183,7 +183,7 @@ function CFCLoadouts.openLoadout()
     -----------------------
     -- Panel 2 panel2   ---
     -----------------------
-    local weaponIcons = { }
+    local weaponIcons = {}
     local loadoutListEditor = vgui.Create( "DListView", panel2 )
     loadoutListEditor:SetPos( 9.6 * uiScale, 10.8 * uiScale )
     loadoutListEditor:SetSize( 144 * uiScale, 432 * uiScale )
@@ -202,7 +202,7 @@ function CFCLoadouts.openLoadout()
             return
         end
 
-        local placeHolder = { }
+        local placeHolder = {}
 
         for k, v in pairs( weaponTable ) do
             placeHolder[ v ] = k
@@ -348,7 +348,7 @@ end )
 list.Set( "DesktopWindows", "cfc_loadouts", {
     title = "CFC Loadouts",
     icon = "cfc_loadouts/icons/cfc_loadouts_widget_icon.png",
-    init = function( icon, window )
+    init = function()
         CFCLoadouts.openLoadout()
     end
 } )
