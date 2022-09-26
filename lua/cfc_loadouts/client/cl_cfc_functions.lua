@@ -1,5 +1,5 @@
 -- Functions
-CFCLoadouts = { }
+CFCLoadouts = {}
 
 function CFCLoadouts.createWeaponIcon( X, Y, ent )
     local weaponIcon = vgui.Create( "ContentIcon", weaponCatPanel )
@@ -14,11 +14,11 @@ function CFCLoadouts.createWeaponIcon( X, Y, ent )
     weaponIcon.selectionShape:SetColor( Color( 10, 10, 10, 240 ) )
     weaponIcon.selectionShape:SetSize( 120, 120 )
 
-    weaponIcon.DoClick = function( )
-        if weaponIcon.selectionShape:IsVisible( ) then
-            weaponIcon.selectionShape:Hide( )
+    weaponIcon.DoClick = function()
+        if weaponIcon.selectionShape:IsVisible() then
+            weaponIcon.selectionShape:Hide()
         else
-            weaponIcon.selectionShape:Show( )
+            weaponIcon.selectionShape:Show()
         end
     end
 
@@ -31,9 +31,9 @@ function CFCLoadouts.paintButton( panel )
     panel.Paint = function( self, w, h )
         draw.RoundedBox( 0, 0, 0, w, h, Color( 255, 255, 255, 255 ) )
 
-        if self:IsDown( ) then
+        if self:IsDown() then
             draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 83, 227, 251, 255 ) )
-        elseif self:IsHovered( ) then
+        elseif self:IsHovered() then
             draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 35, 42, 69, 255 ) )
         else
             draw.RoundedBox( 0, 1, 1, w - 2, h - 2, Color( 42, 47, 74, 255 ) )
@@ -53,7 +53,7 @@ end
 function CFCLoadouts.loadoutFileCheck( loadoutListTable )
     for _, loadoutList in pairs( loadoutListTable ) do
         local files = file.Find( "cfc_loadout/*.json", "DATA", "dateasc" )
-        loadoutList:Clear( )
+        loadoutList:Clear()
 
         for _, filename in pairs( files ) do
             local name = string.Replace( filename, ".json", "" )
@@ -73,10 +73,10 @@ function CFCLoadouts.loadoutFileSave( fileName, weaponsList )
 end
 
 function CFCLoadouts.getSelectedWeapons( shapeTable )
-    local selectedWeapons = { }
+    local selectedWeapons = {}
 
     for weaponName, shape in pairs( shapeTable ) do
-        if not shape:IsVisible( ) then
+        if not shape:IsVisible() then
             table.insert( selectedWeapons, weaponName )
         end
     end
@@ -101,11 +101,11 @@ end
 function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, callback )
     local popupFrame = vgui.Create( "DFrame" )
     popupFrame:SetSize( 300, 150 )
-    popupFrame:Center( )
+    popupFrame:Center()
     popupFrame:SetTitle( windowName )
     popupFrame:SetVisible( true )
     popupFrame:SetDraggable( false )
-    popupFrame:MakePopup( )
+    popupFrame:MakePopup()
 
     popupFrame.Paint = function( _, w, h )
         draw.RoundedBox( 8, 0, 0, w, h, Color( 36, 41, 67, 255 ) )
@@ -114,30 +114,30 @@ function CFCLoadouts.confirmationPopup( windowName, labelText, shouldTextInput, 
 
     local popupText = vgui.Create( "DLabel", popupFrame )
     popupText:SetText( labelText )
-    local textWidth = popupText:GetTextSize( )
-    popupText:SetPos( ( popupFrame:GetWide( ) / 2 ) - ( textWidth / 2 ), 40 )
+    local textWidth = popupText:GetTextSize()
+    popupText:SetPos( ( popupFrame:GetWide() / 2 ) - ( textWidth / 2 ), 40 )
     popupText:SetSize( 300, 15 )
     local popupEntry
 
     if shouldTextInput then
         popupEntry = vgui.Create( "DTextEntry", popupFrame )
-        popupEntry:SetPos( popupFrame:GetWide( ) * 0.18, 80 )
+        popupEntry:SetPos( popupFrame:GetWide() * 0.18, 80 )
         popupEntry:SetSize( 200, 20 )
     end
 
     local popupButton = vgui.Create( "DButton", popupFrame )
     popupButton:SetText( "Confirm" )
-    popupButton:SetPos( popupFrame:GetWide( ) * 0.18, 120 )
+    popupButton:SetPos( popupFrame:GetWide() * 0.18, 120 )
     popupButton:SetSize( 200, 20 )
     CFCLoadouts.paintButton( popupButton )
 
-    popupButton.DoClick = function( )
+    popupButton.DoClick = function()
         if shouldTextInput then
-            callback( popupEntry:GetValue( ) )
+            callback( popupEntry:GetValue() )
         else
-            callback( )
+            callback()
         end
 
-        popupFrame:Close( )
+        popupFrame:Close()
     end
 end
