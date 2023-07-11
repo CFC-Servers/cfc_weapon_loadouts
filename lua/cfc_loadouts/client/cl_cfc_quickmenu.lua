@@ -36,6 +36,7 @@ function onCMenuOpen()
     end
 
     function popUpButton:DoClick()
+        if not IsValid( parentPanel ) then return end
         parentPanel:MoveTo( ScrW() / 2 - ( w / 2 ), ScrH() - ( extendMenu and h / 4 or h ) + 5, 0.5, 0.1 )
         self:SetText( extendMenu and "^" or "v" )
         extendMenu = not extendMenu
