@@ -16,7 +16,7 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
 
     for _, weapon in pairs( allWeapons ) do
         local weaponClass = weapon.ClassName
-        local weaponPerms = weaponTable[ weaponClass ]
+        local weaponPerms = weaponTable[weaponClass]
         local isRestricted
 
         if istable( weaponPerms ) then
@@ -24,8 +24,8 @@ net.Receive( "CFC_Loadout_SendRestrictions", function()
         end
 
         if weapon.Spawnable and isRestricted ~= true then
-            weaponCategorised[ weapon.Category ] = weaponCategorised[ weapon.Category ] or {}
-            table.insert( weaponCategorised[ weapon.Category ], weapon )
+            weaponCategorised[weapon.Category] = weaponCategorised[weapon.Category] or {}
+            table.insert( weaponCategorised[weapon.Category], weapon )
         end
     end
 end )
@@ -135,7 +135,7 @@ function CFCLoadouts.openLoadout()
         local lastWep = ""
 
         for _, weaponString in SortedPairsByMemberValue( weaponTable, "Category" ) do
-            local weapon = allWeapons[ weaponString ]
+            local weapon = allWeapons[weaponString]
 
             if weapon and lastWep ~= weapon then
                 lastWep = weapon
@@ -195,7 +195,7 @@ function CFCLoadouts.openLoadout()
 
         if weaponTable == nil then
             for weaponString in pairs( weaponIcons ) do
-                local icon = weaponIcons[ weaponString ]
+                local icon = weaponIcons[weaponString]
                 icon:Hide()
             end
 
@@ -205,16 +205,16 @@ function CFCLoadouts.openLoadout()
         local placeHolder = {}
 
         for k, v in pairs( weaponTable ) do
-            placeHolder[ v ] = k
+            placeHolder[v] = k
         end
 
         weaponTable = placeHolder
         placeHolder = _
 
         for weaponString in pairs( weaponIcons ) do
-            local icon = weaponIcons[ weaponString ]
+            local icon = weaponIcons[weaponString]
 
-            if not weaponTable[ weaponString ] then
+            if not weaponTable[weaponString] then
                 icon:Show()
             else
                 icon:Hide()
@@ -320,7 +320,7 @@ function CFCLoadouts.openLoadout()
         end
 
         for _, ent in SortedPairsByMemberValue( v, "PrintName" ) do
-            weaponIcons[ ent.ClassName ] = CFCLoadouts.createWeaponIcon( X * uiScale, Y * uiScale, ent ).selectionShape
+            weaponIcons[ent.ClassName] = CFCLoadouts.createWeaponIcon( X * uiScale, Y * uiScale, ent ).selectionShape
             X = X + 120
 
             if X >= 600 then
