@@ -41,7 +41,13 @@ local function giveWeapons( ply )
 end
 
 net.Receive( "CFC_Loadout_WeaponTable", function( _, ply )
-    local weaponTable = net.ReadTable()
+    local netTbl = net.ReadTable()
+    local weaponTable = {}
+    for _, wepClass in ipairs( netTbl ) do
+        if list.Get( "Weapon" )[wepClass] then
+            table.insert( weaponTable, wepClass )
+        end
+    end
     ply.cfcLoadoutWeapons = weaponTable
 
     ply:ChatPrint( "[CFC Loadouts] Success - Your loadout will be applied upon respawning!" )
